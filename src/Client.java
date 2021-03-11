@@ -1,66 +1,80 @@
 import java.io.*;
 import java.net.*;
 import java.util.Optional;
+import java.util.Properties;
 
 class client {
+
     static boolean verbose = false;
-    static final int port = 50000;  
+    static int port = 5000;
+
     public static void main(String[] args) throws Exception {
 
-        System.out.println("Client's Alive!");
-        if (args.length >= 0) {
-            if (args.length > 1) {
-                System.out.println("Too many args!");
-                System.out.println("Closing");
-                System.exit(1);
+        // Handle command line arguments
+        for (int i = 0; i < args.length; i++) {
+            String argument = args[i];
+            switch (argument) {
+                case "-v" -> verbose = true;
+                case "-a" -> {
+                    try {
+                        String algorithmName = args[++i];
+
+                        switch (algorithmName) {
+                            default -> {
+                                System.out.println("FATAL: Unrecgnised algorithm: " + algorithmName);
+                                System.exit(-1);
+                            }
+                        }
+                    } catch (ArrayIndexOutOfBoundsException e) {
+                        System.out.println("FATAL: No algorithm provided with '-a' argument");
+                        System.exit(-1);
+                    }
+                }
+                default -> {
+                    System.out.println("FATAL: Unrecognised argument: " + argument);
+                    System.exit(-1);
+                }
             }
-            
-            for (String arg : args) {
-                if (arg.contains("-v") || arg.contains("-V")) {
-                    System.out.println("Using Verbose Mode");
-                    verbose = true;
-                }                
-            }
-
-            Socket socket = new Socket("localhost", port);
-            DataInputStream streamIn = new DataInputStream(socket.getInputStream());
-            DataOutputStream streamOut = new DataOutputStream(socket.getOutputStream());
-            
-            Optional<String> errorReponse = null;
-            if (!handShakeClient(streamIn, streamOut, errorReponse)) {
-                System.out.println("Error occured in handshake between client and server");
-                System.out.println("Server Responded with:" + errorReponse.get());
-                System.exit(1);
-            }
-
-            String stringBuffer = "";
-            while (!stringBuffer.equals("QUIT")) {
-                /// Writing to socket State
-                
-                /// Check current state and branch to code to respond to server response.
-                /// (todo) figure out how to represent states. havent given it much though yet
-                ///
-
-
-
-
-                streamOut.writeUTF(stringBuffer);
-                streamOut.flush();
-
-                if (verbose)
-                    System.out.println(stringBuffer);
-                
-                /// Reading from socket State
-                stringBuffer = streamIn.readUTF(); 
-
-                if (verbose)
-                    System.out.println(stringBuffer);
-            }
-        
-            streamOut.close();
-            streamIn.close();
-            socket.close();
         }
+
+        Socket socket = new Socket("localhost", port);
+        DataInputStream streamIn = new DataInputStream(socket.getInputStream());
+        DataOutputStream streamOut = new DataOutputStream(socket.getOutputStream());
+
+        Optional<String> errorReponse = null;
+        if (!handShakeClient(streamIn, streamOut, errorReponse)) {
+            System.out.println("Error occured in handshake between client and server");
+            System.out.println("Server Responded with:" + errorReponse.get());
+            System.exit(1);
+        }
+
+        String stringBuffer = "";
+        while (!stringBuffer.equals("QUIT")) {
+            /// Writing to socket State
+
+            /// Check current state and branch to code to respond to server response.
+            /// (todo) figure out how to represent states. havent given it much though yet
+            ///
+
+
+
+
+            streamOut.writeUTF(stringBuffer);
+            streamOut.flush();
+
+            if (verbose)
+                System.out.println(stringBuffer);
+
+            /// Reading from socket State
+            stringBuffer = streamIn.readUTF();
+
+            if (verbose)
+                System.out.println(stringBuffer);
+        }
+
+        streamOut.close();
+        streamIn.close();
+        socket.close();
     }
 
     /** 
