@@ -2,10 +2,9 @@ import java.io.*;
 import java.net.*;
 import java.util.Optional;
 
-import javax.net.ssl.HandshakeCompletedEvent;
-
 class client {
     static boolean verbose = false;
+    static final int port = 50000;  
     public static void main(String[] args) throws Exception {
 
         System.out.println("Client's Alive!");
@@ -23,7 +22,7 @@ class client {
                 }                
             }
 
-            Socket socket = new Socket("localhost", 50000);
+            Socket socket = new Socket("localhost", port);
             DataInputStream streamIn = new DataInputStream(socket.getInputStream());
             DataOutputStream streamOut = new DataOutputStream(socket.getOutputStream());
             
@@ -39,6 +38,11 @@ class client {
                 /// Writing to socket State
                 
                 /// Check current state and branch to code to respond to server response.
+                /// (todo) figure out how to represent states. havent given it much though yet
+                ///
+
+
+
 
                 streamOut.writeUTF(stringBuffer);
                 streamOut.flush();
@@ -53,18 +57,29 @@ class client {
                     System.out.println(stringBuffer);
             }
         
-            streamIn.close();
             streamOut.close();
+            streamIn.close();
             socket.close();
         }
     }
 
+    /** 
+     * Performs the static handshaking between the client and server. 
+     * @param streamIn DataStreamIn object
+     * @param streamOut DataStreamOut object
+     * @param errorReponse If handshake fails, errorResponse will contain the string of the error response from the server
+     * @return Boolean of handshake state. True = success, False = fail
+     * @throws Exception
+     */
+
+
+     /// Some error in here thats not allowing the client and server to connect successfully. Server isnt recieving the HELO and wont progress past that right now.
     private static boolean handShakeClient (DataInputStream streamIn, DataOutputStream streamOut, Optional<String> errorReponse) throws Exception {
         String stringBuffer = "HELO";
-        streamOut.writeUTF(stringBuffer);
+        streamOut.writeUTF("HELO");
         streamOut.flush();
         if (verbose)
-            System.out.println(stringBuffer);
+            System.out.println("SEND " + stringBuffer);
 
         stringBuffer = streamIn.readUTF();
         if (!stringBuffer.equals("OK")) {
@@ -72,13 +87,13 @@ class client {
             return false;
         }
         if (verbose)
-            System.out.println(stringBuffer);
+            System.out.println("RCVD " + stringBuffer);
 
-        stringBuffer = System.getProperty("user.name");
+        stringBuffer = "AUTH " + System.getProperty("user.name");
         streamOut.writeUTF(stringBuffer);
         streamOut.flush();
         if (verbose)
-            System.out.println(stringBuffer);
+            System.out.println("SEND " + stringBuffer);
 
         stringBuffer = streamIn.readUTF();
         if (!stringBuffer.equals("OK")) {
@@ -86,7 +101,7 @@ class client {
             return false;
         }
         if (verbose)
-            System.out.println(stringBuffer);
+            System.out.println("RCVD " + stringBuffer);
 
         return true;
     }
