@@ -2,20 +2,19 @@ import java.io.*;
 import java.net.*;
 
 class client {
-
     public static void main(String[] args) throws Exception {
         boolean verbose = false;
 
         System.out.println("Client's Alive!");
         if (args.length > 0) {
-            if (args.length > 2) {
+            if (args.length > 1) {
                 System.out.println("Too many args!");
                 System.out.println("Closing");
                 System.exit(0);
             }
             
             for (String arg : args) {
-                if (arg.contains("-v")) {
+                if (arg.contains("-v") || arg.contains("-V")) {
                     System.out.println("Using Verbose Mode");
                     verbose = true;
                 }                
