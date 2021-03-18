@@ -1,7 +1,5 @@
 import Protocol.Action;
-import Protocol.ConcreteHandler.AuthenticationHandler;
-import Protocol.ConcreteHandler.DefaultHandler;
-import Protocol.ConcreteHandler.HandshakeHandler;
+import Protocol.ConcreteHandler.*;
 import Protocol.Handler;
 import Protocol.Server;
 import Protocol.State;
@@ -67,13 +65,17 @@ class client {
 
             // Undertaken action returned by the protocol handler
             switch (action.intent) {
-
+                
                 case SWITCH_STATE -> {
                     if (debug) { System.out.println("SWITCHING STATE: " + action.state);}
                     switch (action.state) {
                         case HANDSHAKING -> protocolHandler = new HandshakeHandler();
                         case AUTHENTICATING -> protocolHandler = new AuthenticationHandler();
+                        case QUITTING -> protocolHandler = new FinalStateHandler();
                     }
+
+                    // State change code.
+                    // Actually processes the state change here
                     protocolState = action.state;
                     Action stateChangeAction = protocolHandler.enterState();
                     if (stateChangeAction != null) {

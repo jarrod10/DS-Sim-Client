@@ -2,7 +2,7 @@ package Protocol.ConcreteHandler;
 
 import Protocol.*;
 
-public class HandshakeHandler implements Handler {
+public class FinalStateHandler implements Handler {
 
     @Override
     public Action enterState() {
@@ -11,15 +11,15 @@ public class HandshakeHandler implements Handler {
 
     @Override
     public Action handleMessage(String message) throws UnrecognisedCommandException {
-
         switch (message) {
-            case "OK" -> {
+            case "QUIT" -> {
+                System.exit(0);
                 return new Action(Intent.SWITCH_STATE, State.QUITTING);
             }
+        
             default -> {
                 throw new UnrecognisedCommandException("Unrecognised command: " + message);
             }
         }
-
     }
 }
