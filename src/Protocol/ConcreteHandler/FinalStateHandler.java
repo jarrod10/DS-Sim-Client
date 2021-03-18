@@ -13,6 +13,7 @@ public class FinalStateHandler implements Handler {
     public Action handleMessage(String message) throws UnrecognisedCommandException {
         switch (message) {
             case "QUIT" -> {
+                // (todo) figure out better way of doing this!
                 System.exit(0);
                 return new Action(Intent.SWITCH_STATE, State.QUITTING);
             }

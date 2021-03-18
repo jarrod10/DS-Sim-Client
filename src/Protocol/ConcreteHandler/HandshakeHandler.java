@@ -6,7 +6,7 @@ public class HandshakeHandler implements Handler {
 
     @Override
     public Action enterState() {
-        return new Action(Intent.SEND_MESSAGE, "QUIT");
+        return new Action(Intent.SEND_MESSAGE, "HELO");
     }
 
     @Override
