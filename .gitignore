@@ -15,6 +15,9 @@
 # Java class files
 *.class
 
+#.vscode directory files
+.vscode
+
 # Log file
 *.log
 
