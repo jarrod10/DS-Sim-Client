@@ -14,7 +14,7 @@ public class HandshakeHandler implements Handler {
 
         switch (message) {
             case "OK" -> {
-                return new Action(Intent.SWITCH_STATE, State.QUITTING);
+                return new Action(Intent.SWITCH_STATE, State.AUTHENTICATING);
             }
             default -> {
                 throw new UnrecognisedCommandException("Unrecognised command: " + message);

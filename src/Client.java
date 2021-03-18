@@ -10,10 +10,12 @@ import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 
 class client {
+    
+    static final String address = "127.0.0.1";
+    static final int port = 50000;
 
     static boolean verbose = false;
     static boolean debug = false;
-    static int port = 50000;
 
     public static void main(String[] args) throws Exception {
 
@@ -45,7 +47,7 @@ class client {
             }
         }
 
-        Server remoteServer = new Server("127.0.0.1", 50000);
+        Server remoteServer = new Server(address, port);
 
         State protocolState = State.DEFAULT;
         Handler protocolHandler = new DefaultHandler();
@@ -71,6 +73,7 @@ class client {
                     switch (action.state) {
                         case HANDSHAKING -> protocolHandler = new HandshakeHandler();
                         case AUTHENTICATING -> protocolHandler = new AuthenticationHandler();
+                        case EVENT_HANDLING -> protocolHandler = new EventHandlingHandler();
                         case QUITTING -> protocolHandler = new FinalStateHandler();
                     }
 
