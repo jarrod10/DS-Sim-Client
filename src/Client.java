@@ -52,11 +52,9 @@ class client {
         State protocolState = State.DEFAULT;
         Handler protocolHandler = new DefaultHandler();
         Action action = new Action();
+        String message = "";
 
-        while (protocolState != State.EVENT_HANDLING) {
-            // Attempt to read data from server
-            String message = remoteServer.readString();
-
+        while (protocolState != State.EVENT_HANDLING) {  
             // Send message to protocol handler
             action = protocolHandler.handleMessage(message);
             protocolState = action.state;
@@ -76,6 +74,9 @@ class client {
             // Attemp to to write data to server
             action = protocolHandler.enterState();
             remoteServer.writeString(action.message);
+
+            // Attempt to read data from server
+            message = remoteServer.readStringBlocking( (protocolState == State.XML) ? false : true );
         }
     
 

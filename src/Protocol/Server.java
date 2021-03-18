@@ -3,6 +3,7 @@ package Protocol;
 import java.io.*;
 import java.net.Socket;
 
+// public class Server implements Runnable {
 public class Server {
 
     private Socket socket;
@@ -42,14 +43,55 @@ public class Server {
         }
     }
 
+    // String message = "";
+    // @Override
+    // public void run() {
+    //     StringBuilder result = new StringBuilder();
+    //     // dont know if this logic is correct or even needed.
+    //     // if bytes currently avaliable is greater than 0 then loop.
+    //     // int bytesAvaliable = socket.getInputStream().available();
+    //     // while (bytesAvaliable > 0) {
+    //     // bytesAvaliable = socket.getInputStream().available();
+    //     while (true) {
+    //         int read = (int) '\n';
+    //         try {
+    //             read = inStream.read();
+    //         } catch (IOException e) {
+    //             e.printStackTrace();
+    //         }
+    //         if (read == (int) '\n') {
+    //             break;
+    //         }
+    //         result.append((char) read);
+    //     }
+    //     String message = result.toString();
+    //     message = message.replace("\n", "").replace("\r", "");
+        
+    //     if (verbose) System.out.println("RECV: " + message);
+    // }
+
+    // public String returnRead(Boolean recieveData) {
+    //     if (recieveData) {
+    //         return message;
+    //     } else 
+    //         return "";
+    // }
+    
     /**
-     * reads a message from the server
+     * Reads a message from the server. This function is Blocking
+     * Use for any sequential order of server reads is needed
+     * Mainly for the initialisation steps of the client and server
      * @return returns a message as a String without newlines
      * @throws IOException IO Reading Error
      */
-    public String readString() throws IOException {
-        if (inStream.ready()) {
+    public String readStringBlocking(Boolean recieveData) throws IOException {
+        if (recieveData) {
             StringBuilder result = new StringBuilder();
+            // dont know if this logic is correct or even needed.
+            // if bytes currently avaliable is greater than 0 then loop.
+            // int bytesAvaliable = socket.getInputStream().available();
+            // while (bytesAvaliable > 0) {
+            // bytesAvaliable = socket.getInputStream().available();
             while (true) {
                 int read = inStream.read();
                 if (read == (int) '\n') {
@@ -62,10 +104,38 @@ public class Server {
             
             if (verbose) System.out.println("RECV: " + message);
             return message;
-        } else {
-            if (verbose) System.out.println("RECV: " + "");
+        } else 
             return "";
-        }
     }
+
+    // // (todo) implement multithreading to be read to a buffer/queue!
+    // /**
+    //  * Reads a message from the server. This function is Non-Blocking and will be performed on a seperate thread
+    //  * Use when any non-sequential reading
+    //  * Mainly used for reading job data while also performing calculations
+    //  * @return returns a message as a String without newlines
+    //  * @throws IOException IO Reading Error
+    //  */
+    // public String readStringNonBlocking() throws IOException {
+    //     // if (inStream.ready()) {
+    //         StringBuilder result = new StringBuilder();
+    //         int bytesAvaliable = socket.getInputStream().available();
+    //         while (bytesAvaliable > 0) {
+    //             int read = inStream.read();
+    //             if (read == (int) '\n') {
+    //                 break;
+    //             }
+    //             result.append((char) read);
+    //         }
+    //         String message = result.toString();
+    //         message = message.replace("\n", "").replace("\r", "");
+            
+    //         if (verbose) System.out.println("RECV: " + message);
+    //         return message;
+    //     // } else {
+    //     //     if (verbose) System.out.println("RECV: " + "");
+    //     //     return "";
+    //     // }
+    // }
 
 }
