@@ -1,6 +1,10 @@
 package Protocol.ConcreteHandler;
 
-import Protocol.*;
+import Protocol.Action;
+import Protocol.Handler;
+import Protocol.Intent;
+import Protocol.State;
+import Protocol.UnrecognisedCommandException;
 
 public class FinalStateHandler implements Handler {
 

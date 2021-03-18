@@ -53,6 +53,7 @@ class client {
         Handler protocolHandler = new DefaultHandler();
         Action action = new Action();
         String message = "";
+        Event_Handling eventHandler = new Event_Handling(verbose, debug);
 
         while (protocolState != State.EVENT_HANDLING) {  
             // Send message to protocol handler
@@ -78,9 +79,9 @@ class client {
             // Attempt to read data from server
             message = remoteServer.readStringBlocking( (protocolState == State.XML) ? false : true );
         }
-    
-
-
         
+        // enter into job handling part of the client
+        eventHandler.mainLoop();
+
     }
 }
