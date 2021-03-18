@@ -14,7 +14,7 @@ public class AuthenticationHandler implements Handler {
 
         switch (message) {
             case "OK":
-                return new Action(Intent.SWITCH_STATE, State.EVENT_HANDLING);
+                return new Action(Intent.SWITCH_STATE, State.XML);
             default:
                 throw new UnrecognisedCommandException("Unrecognised command: " + message);
         }

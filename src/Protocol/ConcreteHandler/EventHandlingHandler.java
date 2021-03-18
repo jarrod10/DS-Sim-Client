@@ -1,21 +1,23 @@
 package Protocol.ConcreteHandler;
 
-import Protocol.Action;
-import Protocol.Handler;
-import Protocol.UnrecognisedCommandException;
+import Protocol.*;
 
 public class EventHandlingHandler implements Handler {
 
     @Override
     public Action enterState() {
-        // TODO Auto-generated method stub
-        return null;
+        return new Action(Intent.SEND_MESSAGE, "REDY");
     }
 
     @Override
     public Action handleMessage(String message) throws UnrecognisedCommandException {
-        // TODO Auto-generated method stub
-        return null;
+        switch (message) {
+            case "OK" -> {
+                return new Action(Intent.LOOP, State.EVENT_HANDLING);
+            }
+            default -> {
+                throw new UnrecognisedCommandException("Unrecognised command: " + message);
+            }
+        }
     }
-    
 }

@@ -9,7 +9,12 @@ public class Server {
     private BufferedReader inStream;
     private BufferedWriter outStream;
 
-    public Server(String host, int port) {
+    static boolean verbose;
+    static boolean debug;
+
+    public Server(String host, int port, boolean _verbose, boolean _debug) {
+        verbose = _verbose;
+        debug = _debug;
         try {
             socket = new Socket(host, port);
             inStream = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -20,15 +25,28 @@ public class Server {
         }
     }
 
+    /**
+     * Writes a message to the server, adds newline
+     * @param message A String of the message to be sent
+     * @throws IOException IO Writting error
+     */
     public void writeString(String message) throws IOException {
-        if (message.endsWith("\n")) {
-            outStream.write(message);
-        } else {
-            outStream.write(message + "\n");
+        if (message != null) {
+            if (message.endsWith("\n")) {
+                outStream.write(message);
+            } else {
+                outStream.write(message + "\n");
+            }
+            if (verbose) System.out.println("SEND: " + message);
+            outStream.flush();
         }
-        outStream.flush();
     }
 
+    /**
+     * reads a message from the server
+     * @return returns a message as a String without newlines
+     * @throws IOException IO Reading Error
+     */
     public String readString() throws IOException {
         if (inStream.ready()) {
             StringBuilder result = new StringBuilder();
@@ -39,8 +57,13 @@ public class Server {
                 }
                 result.append((char) read);
             }
-            return result.toString();
+            String message = result.toString();
+            message = message.replace("\n", "").replace("\r", "");
+            
+            if (verbose) System.out.println("RECV: " + message);
+            return message;
         } else {
+            if (verbose) System.out.println("RECV: " + "");
             return "";
         }
     }

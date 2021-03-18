@@ -4,10 +4,10 @@ import Protocol.Handler;
 import Protocol.Server;
 import Protocol.State;
 
-import java.io.*;
-import java.net.*;
-import java.nio.charset.StandardCharsets;
-import java.util.Optional;
+// import java.io.*;
+// import java.net.*;
+// import java.nio.charset.StandardCharsets;
+// import java.util.Optional;
 
 class client {
     
@@ -47,57 +47,39 @@ class client {
             }
         }
 
-        Server remoteServer = new Server(address, port);
+        Server remoteServer = new Server(address, port, verbose, debug);
 
         State protocolState = State.DEFAULT;
         Handler protocolHandler = new DefaultHandler();
         Action action = new Action();
 
-        while (true) {
-
+        while (protocolState != State.EVENT_HANDLING) {
             // Attempt to read data from server
             String message = remoteServer.readString();
-            message = message.replace("\n", "").replace("\r", "");
-            if (verbose) {
-                System.out.println("RECV: " + message);
-            }
 
             // Send message to protocol handler
             action = protocolHandler.handleMessage(message);
+            protocolState = action.state;
 
-            // Undertaken action returned by the protocol handler
-            switch (action.intent) {
-                
-                case SWITCH_STATE -> {
-                    if (debug) { System.out.println("SWITCHING STATE: " + action.state);}
-                    switch (action.state) {
-                        case HANDSHAKING -> protocolHandler = new HandshakeHandler();
-                        case AUTHENTICATING -> protocolHandler = new AuthenticationHandler();
-                        case EVENT_HANDLING -> protocolHandler = new EventHandlingHandler();
-                        case QUITTING -> protocolHandler = new FinalStateHandler();
-                    }
+            // Switching to next state
+            if (debug) System.out.println("SWITCHING STATE: " + protocolState);
+            switch (protocolState) {
+                case HANDSHAKING -> protocolHandler = new HandshakeHandler();
+                case AUTHENTICATING -> protocolHandler = new AuthenticationHandler();
+                case XML -> protocolHandler = new XMLHandler();
+                case EVENT_HANDLING -> protocolHandler = new EventHandlingHandler();
+                // case QUITTING -> protocolHandler = new FinalStateHandler();
 
-                    // State change code.
-                    // Actually processes the state change here
-                    protocolState = action.state;
-                    Action stateChangeAction = protocolHandler.enterState();
-                    if (stateChangeAction != null) {
-                        remoteServer.writeString(stateChangeAction.message);
-                        if (verbose) {
-                            System.out.println("SEND: " + stateChangeAction.message);
-                        }
-                    }
-                }
-
-                case SEND_MESSAGE -> {
-                    remoteServer.writeString(action.message);
-                    if (verbose) {
-                        System.out.println("SEND: " + action.message);
-                    }
-                }
-
+                default -> throw new IllegalArgumentException("Unexpected value: " + protocolState);
             }
-
+            
+            // Attemp to to write data to server
+            action = protocolHandler.enterState();
+            remoteServer.writeString(action.message);
         }
+    
+
+
+        
     }
 }
