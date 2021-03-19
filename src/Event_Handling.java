@@ -1,16 +1,30 @@
+import Protocol.State;
+// import Protocol.ConcreteHandler.FinalStateHandler;
+import Protocol.Handler;
+import Protocol.Action;
+
 public class Event_Handling {
     final boolean verbose;
     final boolean debug;
 
+    State protocolState;
+    Handler protocolHandler;
+    Action action;
+    // String message = "";
+
     // create some kind of queue
+    // Queue jobQueue;
 
     /**
      * Event_Handling constructor.
      * (todo) pass in anything from client that this class may need
      */
-    Event_Handling (boolean _verbose, boolean _debug) {
+    Event_Handling (boolean _verbose, boolean _debug, State _protocolState, Handler _protocolHandler, Action _action) {
         verbose = _verbose;
         debug = _debug;
+        protocolState = _protocolState;
+        protocolHandler = _protocolHandler;
+        action = _action;
     }
 
     /**
@@ -18,7 +32,7 @@ public class Event_Handling {
      */
     public void mainLoop () {
         // change to while not QUIT message
-        while (true) {
+        while (protocolState != State.QUITTING) {
 
             // Undertaken action returned by the protocol handler
             // switch (action.intent) {

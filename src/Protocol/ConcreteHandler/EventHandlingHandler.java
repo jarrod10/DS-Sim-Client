@@ -23,6 +23,6 @@ public class EventHandlingHandler implements Handler {
         //         throw new UnrecognisedCommandException("Unrecognised command: " + message);
         //     }
         // }
-        return new Action();
+        return new Action(Intent.LOOP, State.EVENT_HANDLING);
     }
 }

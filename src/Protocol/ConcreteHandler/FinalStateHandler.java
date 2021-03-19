@@ -3,7 +3,6 @@ package Protocol.ConcreteHandler;
 import Protocol.Action;
 import Protocol.Handler;
 import Protocol.Intent;
-import Protocol.State;
 import Protocol.UnrecognisedCommandException;
 
 public class FinalStateHandler implements Handler {
@@ -19,7 +18,7 @@ public class FinalStateHandler implements Handler {
             case "QUIT" -> {
                 // (todo) figure out better way of doing this!
                 System.exit(0);
-                return new Action(Intent.SWITCH_STATE, State.QUITTING);
+                return new Action();
             }
         
             default -> {

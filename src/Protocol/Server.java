@@ -81,6 +81,7 @@ public class Server {
      * Reads a message from the server. This function is Blocking
      * Use for any sequential order of server reads is needed
      * Mainly for the initialisation steps of the client and server
+     * @param recieveData Should the current state recieve data
      * @return returns a message as a String without newlines
      * @throws IOException IO Reading Error
      */

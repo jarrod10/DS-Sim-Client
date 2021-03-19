@@ -53,7 +53,7 @@ class client {
         Handler protocolHandler = new DefaultHandler();
         Action action = new Action();
         String message = "";
-        Event_Handling eventHandler = new Event_Handling(verbose, debug);
+        Event_Handling eventHandler = new Event_Handling(verbose, debug, protocolState, protocolHandler, action);
 
         while (protocolState != State.EVENT_HANDLING) {  
             // Send message to protocol handler
