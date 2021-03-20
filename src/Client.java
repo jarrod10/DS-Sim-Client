@@ -3,7 +3,6 @@ import Protocol.ConcreteHandler.*;
 import Protocol.Handler;
 import Protocol.Server;
 import Protocol.State;
-import Protocol.XMLParser;
 
 // import java.io.*;
 // import java.net.*;
@@ -54,7 +53,7 @@ class client {
         Handler protocolHandler = new DefaultHandler();
         Action action = new Action();
         String message = "";
-        Event_Handling eventHandler = new Event_Handling(verbose, debug, protocolState, protocolHandler, action);
+        Event_Handling eventHandler = new Event_Handling(verbose, debug, remoteServer, protocolState, protocolHandler, action);
 
         while (protocolState != State.EVENT_HANDLING) {  
             // Send message to protocol handler
@@ -82,7 +81,7 @@ class client {
         }
         
         // enter into job handling part of the client
-        eventHandler.mainLoop();
+        eventHandler.mainLoop(remoteServer, message);
 
     }
 }
