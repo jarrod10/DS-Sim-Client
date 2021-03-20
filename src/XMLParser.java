@@ -2,7 +2,7 @@ public class XMLParser {
     public void parse() {
         SystemInfomation info = SystemInfomation.getInstance();
         //example of adding server to server collection class
-        info.AddServerInfomation("Big", 3, 3, 1.0f, 1, 1, 1);
+        info.addServerInfomation("Big", 3, 3, 1.0f, 1, 1, 1);
         //    	try {
 //    		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 //    		DocumentBuilder builder = factory.newDocumentBuilder();
