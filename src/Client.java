@@ -3,6 +3,7 @@ import Protocol.ConcreteHandler.*;
 import Protocol.Handler;
 import Protocol.Server;
 import Protocol.State;
+import Protocol.XMLParser;
 
 // import java.io.*;
 // import java.net.*;
@@ -65,7 +66,7 @@ class client {
             switch (protocolState) {
                 case HANDSHAKING -> protocolHandler = new HandshakeHandler();
                 case AUTHENTICATING -> protocolHandler = new AuthenticationHandler();
-                case XML -> protocolHandler = new XMLHandler();
+                case XML -> {protocolHandler = new XMLHandler(); new XMLParser().parse();}
                 case EVENT_HANDLING -> protocolHandler = new EventHandlingHandler();
                 // case QUITTING -> protocolHandler = new FinalStateHandler();
 
