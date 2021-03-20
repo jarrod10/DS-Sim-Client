@@ -28,7 +28,7 @@ public class SystemInfomation {
      * @param _memory
      * @param _disk
      */
-    public void setSystemInfomation(String _type, int _limit, int _bootupTime, Float _hourlyRate, int _coreCount, int _memory, int _disk) {
+    public void addServerInfomation(String _type, int _limit, int _bootupTime, Float _hourlyRate, int _coreCount, int _memory, int _disk) {
         ArrayList<Object> serverData = new ArrayList<Object>(7);
         serverData.add(_type);
         serverData.add(_limit);
