@@ -41,13 +41,14 @@ public class Event_Handling {
      */
     public void mainLoop (String initialMessage) throws IOException {
         String message = initialMessage;
+        String[] messageTokens = message.split(" ");
         // change to while not QUIT message
         loop:
         while (protocolState != State.QUITTING) {
 
             //Manipulate Data
-            switch (message) {
-                case "JOBN" -> jobQueue.add(new Job(message));
+            switch (messageTokens[0]) {
+                case "JOBN" -> jobQueue.add(new Job(messageTokens));
                 case "NONE" -> {protocolState = State.QUITTING; break loop;}         
                 // default -> {break loop;}
             }
