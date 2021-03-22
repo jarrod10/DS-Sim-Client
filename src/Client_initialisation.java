@@ -4,11 +4,6 @@ import Protocol.Handler;
 import Protocol.Server;
 import Protocol.State;
 
-// import java.io.*;
-// import java.net.*;
-// import java.nio.charset.StandardCharsets;
-// import java.util.Optional;
-
 class client {
     
     static final String address = "127.0.0.1";

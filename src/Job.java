@@ -1,5 +1,3 @@
-import java.util.regex.*;
-
 public class Job {
     int id;
     String type;
@@ -9,10 +7,9 @@ public class Job {
     int memory;
     int disk;
 
-    // (todo) cast all message tokens into variable types
     /**
-     * new job constructor
-     * @param messageTokens A String array of ...
+     * New job constructor that sets up all the variables of a job to be passed around as an object
+     * @param messageTokens A String array of all the tokenised message data
      */
     Job(String[] messageTokens) {
         id = Integer.parseInt(messageTokens[2]);
