@@ -53,8 +53,10 @@ public class Event_Handling {
                 // default -> {break loop;}
             }
 
-            //Write out data
+            // example of accessing data
             System.out.println(jobQueue.peek().EstimatedRunTime);
+
+            //Write out data
 
             //Read from server
             message = remoteServer.readStringBlocking(true);
