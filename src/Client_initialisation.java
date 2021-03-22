@@ -80,8 +80,14 @@ class client {
             message = remoteServer.readStringBlocking( (protocolState == State.XML) ? false : true );
         }
         
-        // enter into job handling part of the client
-        eventHandler.mainLoop(remoteServer, message);
+        // Enter into job handling part of the client
+        eventHandler.mainLoop(message);
 
+        // Terminate client
+        protocolHandler = new FinalStateHandler();
+        action = protocolHandler.enterState();
+        protocolState = State.QUITTING;
+        if (debug) System.out.println("SWITCHING STATE: " + protocolState);
+        remoteServer.writeString(action.message);
     }
 }

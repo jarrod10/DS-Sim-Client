@@ -7,8 +7,12 @@ public class Job {
     int memory;
     int disk;
 
-    Job() {
+    Job(String rawString) {
+        parseJob(rawString);
+    }
 
+    private void parseJob(String rawString) {
+        
     }
     
 }

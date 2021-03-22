@@ -1,6 +1,11 @@
 import Protocol.State;
 import Protocol.Handler;
 import Protocol.Server;
+
+import java.io.IOException;
+import java.util.LinkedList;
+import java.util.Queue;
+
 import Protocol.Action;
 // import Protocol.ConcreteHandler.FinalStateHandler;
 
@@ -15,7 +20,7 @@ public class Event_Handling {
     // String message = "";
 
     // create some kind of queue
-    // Queue jobQueue;
+    Queue<Job> jobQueue = new LinkedList<Job>();
 
     /**
      * Event_Handling constructor.
@@ -32,19 +37,28 @@ public class Event_Handling {
 
     /**
      * The main loop of handling jobs from the server
+     * @throws IOException
      */
-    public void mainLoop (String initialMessage) {
+    public void mainLoop (String initialMessage) throws IOException {
         String message = initialMessage;
         // change to while not QUIT message
+        loop:
         while (protocolState != State.QUITTING) {
 
-            //Read from server
-
-
             //Manipulate Data
-
+            switch (message) {
+                case "JOBN" -> jobQueue.add(new Job(message));
+                case "NONE" -> {protocolState = State.QUITTING; break loop;}         
+                // default -> {break loop;}
+            }
 
             //Write out data
+            System.out.println(jobQueue.peek().EstimatedRunTime);
+
+            //Read from server
+            message = remoteServer.readStringBlocking(true);
+
+
 
             // Undertaken action returned by the protocol handler
             // switch (action.intent) {
@@ -59,6 +73,5 @@ public class Event_Handling {
             // }
 
         }
-
     }
 }
