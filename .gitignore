@@ -15,6 +15,10 @@
 # Java class files
 *.class
 
+# Ds-Server files
+ds-server
+*.xml
+
 #.vscode directory files
 .vscode
 

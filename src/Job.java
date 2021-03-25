@@ -20,4 +20,5 @@ public class Job {
         memory = Integer.parseInt(messageTokens[5]);
         disk = Integer.parseInt(messageTokens[6]);
     }
+
 }

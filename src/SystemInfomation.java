@@ -7,16 +7,6 @@ public class SystemInfomation {
 
     SystemInfomation() {}
 
-    // SystemInfomation(String _type, int _limit, int _bootupTime, Float _hourlyRate, int _coreCount, int _memory, int _disk) {
-    //     type = _type;
-    //     limit = _limit;
-    //     bootupTime = _bootupTime;
-    //     hourlyRate = _hourlyRate;
-    //     coreCount = _coreCount;
-    //     memory = _memory;
-    //     disk = _disk;
-    // }
-
     /**
      * Call for each server to be added.
      * Adds server data from XML to a globally accessable server collection
