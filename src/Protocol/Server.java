@@ -13,17 +13,12 @@ public class Server {
     static boolean verbose;
     static boolean debug;
 
-    public Server(String host, int port, boolean _verbose, boolean _debug) {
+    public Server(String host, int port, boolean _verbose, boolean _debug) throws IOException {
         verbose = _verbose;
         debug = _debug;
-        try {
-            socket = new Socket(host, port);
-            inStream = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            outStream = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
-        } catch (IOException e) {
-            e.printStackTrace();
-            socket = null;
-        }
+        socket = new Socket(host, port);
+        inStream = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        outStream = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
     }
 
     /**

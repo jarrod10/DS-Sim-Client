@@ -4,13 +4,18 @@ import Protocol.Handler;
 import Protocol.Server;
 import Protocol.State;
 
-class client {
-    
-    static final String address = "127.0.0.1";
-    static final int port = 50000;
+import java.io.IOException;
+import java.sql.SQLOutput;
 
+class client {
+
+    // Initialise properties to sensible defaults
     static boolean verbose = false;
     static boolean debug = false;
+    static String configurationPath = "ds-system.xml";
+    static String algorithmName = "allToLargest";
+    static String remoteAddress = "127.0.0.1";
+    static int port = 50000;
 
     public static void main(String[] args) throws Exception {
 
@@ -20,29 +25,62 @@ class client {
             switch (argument) {
                 case "-v" -> verbose = true;
                 case "-d" -> debug = true;
+                case "-ip" -> {
+                    try {
+                        remoteAddress = args[++i];
+                    } catch (ArrayIndexOutOfBoundsException e) {
+                        System.out.println("FATAL: No IP address given with '-ip' argument");
+                        System.exit(-1);
+                    }
+                }
+                case "-port" -> {
+                    try {
+                        port = Integer.parseInt(args[++i]);
+                    } catch (ArrayIndexOutOfBoundsException e) {
+                        System.out.println("FATAL: No port given with '-p' argument");
+                        System.exit(-1);
+                    } catch (NumberFormatException e) {
+                        System.out.println("FATAL: Port not a recognised number");
+                        System.exit(-1);
+                    }
+                }
                 case "-a" -> {
                     try {
-                        String algorithmName = args[++i];
-
-                        switch (algorithmName) {
-                            default -> {
-                                System.out.println("FATAL: Unrecgnised algorithm: " + algorithmName);
-                                System.exit(-1);
-                            }
-                        }
+                        algorithmName = args[++i];
                     } catch (ArrayIndexOutOfBoundsException e) {
                         System.out.println("FATAL: No algorithm provided with '-a' argument");
                         System.exit(-1);
                     }
                 }
-                default -> {
-                    System.out.println("FATAL: Unrecognised argument: " + argument);
-                    System.exit(-1);
+                case "-c" -> {
+                    try {
+                        configurationPath = args[++i];
+                    } catch (ArrayIndexOutOfBoundsException e) {
+                        System.out.println("FATAL: No path provided with '-c' argument");
+                        System.exit(-1);
+                    }
                 }
+                default -> System.out.println("ERROR: Unrecognised argument: " + argument + ", ignoring");
             }
         }
 
-        Server remoteServer = new Server(address, port, verbose, debug);
+        // Read system information XML if possible
+        try {
+            SystemInfomation info = XMLParser.parse(configurationPath);
+        } catch (IOException e) {
+            // TODO Fall back on protocol based system discovery if XML error
+            System.out.println("FATAL: XML file not found");
+            System.exit(-1);
+        }
+
+        // Attempt to create connection to ds-sim server
+        Server remoteServer = null;
+        try {
+            remoteServer = new Server(remoteAddress, port, verbose, debug);
+        } catch (IOException e) {
+            System.out.println("FATAL: Could not create a connection to DS-Sim server");
+            System.exit(-1);
+        }
 
         State protocolState = State.DEFAULT;
         Handler protocolHandler = new DefaultHandler();
@@ -60,7 +98,6 @@ class client {
             switch (protocolState) {
                 case HANDSHAKING -> protocolHandler = new HandshakeHandler();
                 case AUTHENTICATING -> protocolHandler = new AuthenticationHandler();
-                case XML -> {protocolHandler = new XMLHandler(); new XMLParser().parse();}
                 case EVENT_HANDLING -> protocolHandler = new EventHandlingHandler();
                 // case QUITTING -> protocolHandler = new FinalStateHandler();
 
@@ -72,7 +109,7 @@ class client {
             remoteServer.writeString(action.message);
 
             // Attempt to read data from server
-            message = remoteServer.readStringBlocking( (protocolState == State.XML) ? false : true );
+            message = remoteServer.readStringBlocking(true);
         }
         
         // Enter into job handling part of the client
