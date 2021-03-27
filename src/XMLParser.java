@@ -1,7 +1,7 @@
+import Protocol.SystemInfomation;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -10,10 +10,10 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathFactory;
 import java.io.File;
-import java.io.IOException;
+import java.io.FileNotFoundException;
 
 public class XMLParser {
-    public static SystemInfomation parse(String xmlPath) throws IOException {
+    public static SystemInfomation parse(String xmlPath) throws FileNotFoundException {
         SystemInfomation info = SystemInfomation.getInstance();
         //example of adding server to server collection class
         //info.addServerInfomation("Big", 3, 3, 1.0f, 1, 1, 1);
@@ -43,13 +43,17 @@ public class XMLParser {
 				int coreCount = Integer.parseInt(_coreCount);
 				int memory = Integer.parseInt(_memory);
 				int disk = Integer.parseInt(_disk);
-				info.addServerInfomation(type, limit, bootupTime, hourlyRate, coreCount, memory, disk);
+				info.addServer(type, limit, bootupTime, hourlyRate, coreCount, memory, disk);
 
 			}
 
 			return info;
 
-		} catch (Exception e) {
+		} catch (FileNotFoundException e) {
+			// Pass FileNotFoundException to calling class for more graceful handling
+			throw e;
+		}
+		catch (Exception e) {
 			System.out.println("FATAL: Unexpected exception in XML parser");
 			e.printStackTrace();
 			System.exit(-1);

@@ -1,9 +1,9 @@
 package Protocol;
 
-public enum State {
+public enum ProtocolState {
     DEFAULT,
     HANDSHAKING,
     AUTHENTICATING,
-    EVENT_HANDLING,
+    EVENT_LOOP,
     QUITTING
 }

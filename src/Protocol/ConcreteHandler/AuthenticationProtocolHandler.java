@@ -1,25 +1,24 @@
 package Protocol.ConcreteHandler;
 
 import Protocol.Action;
-import Protocol.Handler;
+import Protocol.ProtocolHandler;
 import Protocol.Intent;
-import Protocol.State;
+import Protocol.ProtocolState;
 import Protocol.UnrecognisedCommandException;
 
-public class AuthenticationHandler implements Handler {
+public class AuthenticationProtocolHandler implements ProtocolHandler {
 
     @Override
-    public Action enterState() {
+    public Action onEnterState() {
         return new Action(Intent.SEND_MESSAGE, "AUTH TestUsername");
     }
 
     @Override
-    public Action handleMessage(String message) throws UnrecognisedCommandException {
+    public Action onReceiveMessage(String message) throws UnrecognisedCommandException {
 
         return switch (message) {
-            case "OK" -> new Action(Intent.SWITCH_STATE, State.EVENT_HANDLING);
+            case "OK" -> new Action(Intent.SWITCH_STATE, ProtocolState.EVENT_LOOP);
             default -> throw new UnrecognisedCommandException("Unrecognised command: " + message);
         };
-
     }
 }

@@ -1,13 +1,11 @@
-import Protocol.Action;
+import Protocol.*;
 import Protocol.ConcreteHandler.*;
-import Protocol.Handler;
-import Protocol.Server;
-import Protocol.State;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.sql.SQLOutput;
+import java.util.ArrayDeque;
 
-class client {
+class Client {
 
     // Initialise properties to sensible defaults
     static boolean verbose = false;
@@ -45,6 +43,7 @@ class client {
                     }
                 }
                 case "-a" -> {
+                    // TODO Actually switch algorithms if argument is present
                     try {
                         algorithmName = args[++i];
                     } catch (ArrayIndexOutOfBoundsException e) {
@@ -67,59 +66,97 @@ class client {
         // Read system information XML if possible
         try {
             SystemInfomation info = XMLParser.parse(configurationPath);
-        } catch (IOException e) {
+        } catch (FileNotFoundException e) {
             // TODO Fall back on protocol based system discovery if XML error
-            System.out.println("FATAL: XML file not found");
+            System.out.println("FATAL: XML file " + configurationPath + " does not exist");
             System.exit(-1);
         }
 
         // Attempt to create connection to ds-sim server
-        Server remoteServer = null;
+        Connection remoteConnection = null;
         try {
-            remoteServer = new Server(remoteAddress, port, verbose, debug);
+            remoteConnection = new Connection(remoteAddress, port, verbose, debug);
         } catch (IOException e) {
             System.out.println("FATAL: Could not create a connection to DS-Sim server");
             System.exit(-1);
         }
 
-        State protocolState = State.DEFAULT;
-        Handler protocolHandler = new DefaultHandler();
-        Action action = new Action();
-        String message = "";
-        Event_Handling eventHandler = new Event_Handling(verbose, debug, remoteServer, protocolState, protocolHandler, action);
+        // Create all necessary objects, and send the first message to the server
+        ProtocolState protocolState = ProtocolState.DEFAULT;
+        ProtocolHandler protocolHandler = new DefaultProtocolHandler();
 
-        while (protocolState != State.EVENT_HANDLING) {  
-            // Send message to protocol handler
-            action = protocolHandler.handleMessage(message);
-            protocolState = action.state;
+        ArrayDeque<Action> actionQueue = new ArrayDeque<>();
+        actionQueue.add(protocolHandler.onEnterState());
 
-            // Switching to next state
-            if (debug) System.out.println("SWITCHING STATE: " + protocolState);
-            switch (protocolState) {
-                case HANDSHAKING -> protocolHandler = new HandshakeHandler();
-                case AUTHENTICATING -> protocolHandler = new AuthenticationHandler();
-                case EVENT_HANDLING -> protocolHandler = new EventHandlingHandler();
-                // case QUITTING -> protocolHandler = new FinalStateHandler();
+        SystemInfomation systemInfomation = SystemInfomation.getInstance();
 
-                default -> throw new IllegalArgumentException("Unexpected value: " + protocolState);
+        while (true) {
+
+            if (actionQueue.isEmpty()) {
+
+                // Attempt to read data from server if available
+                String recievedMessage = "";
+                if (remoteConnection.readReady()) {
+                    recievedMessage = remoteConnection.readString();
+                }
+
+                // Pass string to ProtocolHandler
+                if (recievedMessage.length() > 0) {
+                    actionQueue.add(protocolHandler.onReceiveMessage(recievedMessage));
+                }
+
+            } else {
+
+                Action nextAction = actionQueue.removeFirst();
+                switch (nextAction.intent) {
+
+                    case SWITCH_STATE -> {
+                        if (debug) System.out.println("SWITCHING STATE: " + nextAction.state);
+                        switch (nextAction.state) {
+                            case DEFAULT -> {
+                                protocolState = ProtocolState.DEFAULT;
+                                protocolHandler = new DefaultProtocolHandler();
+                            }
+                            case HANDSHAKING -> {
+                                protocolState = ProtocolState.HANDSHAKING;
+                                protocolHandler = new HandshakeProtocolHandler();
+                            }
+                            case AUTHENTICATING -> {
+                                protocolState = ProtocolState.AUTHENTICATING;
+                                protocolHandler = new AuthenticationProtocolHandler();
+                            }
+                            case EVENT_LOOP -> {
+                                protocolState = ProtocolState.EVENT_LOOP;
+                                protocolHandler = new EventLoopProtocolHandler();
+                            }
+                            case QUITTING -> {
+                                protocolState = ProtocolState.QUITTING;
+                                protocolHandler = new FinalProtocolHandler();
+                            }
+                        }
+                        actionQueue.add(protocolHandler.onEnterState());
+                    }
+                    case SEND_MESSAGE -> {
+                        remoteConnection.writeString(nextAction.message);
+                    }
+                    case COMMAND_SCHD -> {
+                        remoteConnection.writeString("SCHD " +
+                                nextAction.job.jobID + " " +
+                                nextAction.server.serverType + " " +
+                                nextAction.server.serverID);
+                    }
+                    case COMMAND_CNTJ -> {
+                        remoteConnection.writeString("CNTJ " +
+                                nextAction.server.serverType + " " +
+                                nextAction.server.serverID + " " +
+                                nextAction.jobState.getIndex());
+                    }
+                    case QUIT -> {
+                        System.exit(1);
+                    }
+                }
             }
-            
-            // Attemp to to write data to server
-            action = protocolHandler.enterState();
-            remoteServer.writeString(action.message);
-
-            // Attempt to read data from server
-            message = remoteServer.readStringBlocking(true);
         }
-        
-        // Enter into job handling part of the client
-        eventHandler.mainLoop(message);
-
-        // Terminate client
-        protocolHandler = new FinalStateHandler();
-        action = protocolHandler.enterState();
-        protocolState = State.QUITTING;
-        if (debug) System.out.println("SWITCHING STATE: " + protocolState);
-        remoteServer.writeString(action.message);
     }
+
 }

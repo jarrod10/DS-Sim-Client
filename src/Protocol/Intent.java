@@ -3,5 +3,8 @@ package Protocol;
 public enum Intent {
     SEND_MESSAGE,
     SWITCH_STATE,
-    LOOP
+    COMMAND_SCHD,
+    COMMAND_CNTJ,
+    QUIT,
+    LOOP //Legacy
 }
