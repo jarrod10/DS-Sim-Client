@@ -17,10 +17,9 @@ public class Event_Handling {
     State protocolState;
     Handler protocolHandler;
     Action action;
-    // String message = "";
 
-    // create some kind of queue
-    Queue<Job> jobQueue = new LinkedList<Job>();
+    // Queue<Job> jobQueue = new LinkedList<Job>();
+    Job job;
 
     /**
      * Event_Handling constructor.
@@ -43,39 +42,31 @@ public class Event_Handling {
         String message = initialMessage;
         
         SystemInfomation s = SystemInfomation.getInstance();
-        int c = 0;
         
-        // change to while not QUIT message
         loop:
         while (protocolState != State.QUITTING) {
             String[] messageTokens = message.split(" ");
             
             //Manipulate Data
             switch (messageTokens[0]) {
-                case "JOBN" -> {jobQueue.add(new Job(messageTokens));
-                                    remoteServer.writeString("SCHD " +c+ " "+ s.servers.get(2).get(0) + " 0");}
-                case "JCPL" -> {remoteServer.writeString("TERM");}
+                case "OK" -> {/* do nothing and send REDY*/}
+                case "JOBN" -> {job = new Job(messageTokens);
+                                remoteServer.writeString("SCHD " + job.id + " "+ s.servers.get(2).get(0) + " 0"); /* Hardcoded for now */}
+                case "JCPL" -> {/* Register internally that particular job has been completed and continue to send REDY*/}
                 case "NONE" -> {protocolState = State.QUITTING; break loop;}         
-                // default -> {break loop;}
             }
 
             // example of accessing data
             // System.out.println(jobQueue.peek().EstimatedRunTime);
+            // System.out.println(s.servers.get(s.serverCount - 1).get(4));
 
             //Write out data
-            
-            c++;
-
-            // System.out.println(s.servers.get(s.serverCount - 1).get(4));
-            
-            
-            //Read from server
             message = remoteServer.readStringBlocking(true);
 
             remoteServer.writeString("REDY");
+            
+            //Read from server
             message = remoteServer.readStringBlocking(true);
-            // remoteServer.writeString("REDY");
-
         }
     }
 }
