@@ -21,7 +21,10 @@ public class EventLoopProtocolHandler implements ProtocolHandler {
             }
             case "JOBN" -> {
                 Job job = new Job(messageParts);
-                Server server = systemInfomation.serverList.get(2);
+
+                //Grabs largest server from server list
+                Server server = SystemInfomation.mostCores(systemInfomation.serverList);
+
                 return new Action(Intent.COMMAND_SCHD, job, server);
             }
             case "JCPL" -> {
