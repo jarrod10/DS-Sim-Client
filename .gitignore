@@ -17,6 +17,7 @@
 
 # Test Files
 *.sh
+*.tar
 S1testConfigs/
 
 # Ds-Server files
