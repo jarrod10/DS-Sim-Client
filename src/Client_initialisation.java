@@ -7,25 +7,17 @@ import java.util.ArrayDeque;
 
 class Client {
 
-    // Initialise properties to sensible defaults
-    static boolean verbose = false;
-    static boolean debug = false;
-    static String configurationPath = "ds-system.xml";
-    static String algorithmName = "allToLargest";
-    static String remoteAddress = "127.0.0.1";
-    static int port = 50000;
-
     public static void main(String[] args) throws Exception {
 
         // Handle command line arguments
         for (int i = 0; i < args.length; i++) {
             String argument = args[i];
             switch (argument) {
-                case "-v" -> verbose = true;
-                case "-d" -> debug = true;
+                case "-v" -> SystemInfomation.verbose = true;
+                case "-d" -> SystemInfomation.debug = true;
                 case "-ip" -> {
                     try {
-                        remoteAddress = args[++i];
+                        SystemInfomation.remoteAddress = args[++i];
                     } catch (ArrayIndexOutOfBoundsException e) {
                         System.out.println("FATAL: No IP address given with '-ip' argument");
                         System.exit(-1);
@@ -33,7 +25,7 @@ class Client {
                 }
                 case "-port" -> {
                     try {
-                        port = Integer.parseInt(args[++i]);
+                        SystemInfomation.port = Integer.parseInt(args[++i]);
                     } catch (ArrayIndexOutOfBoundsException e) {
                         System.out.println("FATAL: No port given with '-p' argument");
                         System.exit(-1);
@@ -45,7 +37,7 @@ class Client {
                 case "-a" -> {
                     // TODO Actually switch algorithms if argument is present
                     try {
-                        algorithmName = args[++i];
+                        SystemInfomation.algorithmName = args[++i];
                     } catch (ArrayIndexOutOfBoundsException e) {
                         System.out.println("FATAL: No algorithm provided with '-a' argument");
                         System.exit(-1);
@@ -53,7 +45,7 @@ class Client {
                 }
                 case "-c" -> {
                     try {
-                        configurationPath = args[++i];
+                        SystemInfomation.configurationPath = args[++i];
                     } catch (ArrayIndexOutOfBoundsException e) {
                         System.out.println("FATAL: No path provided with '-c' argument");
                         System.exit(-1);
@@ -63,19 +55,13 @@ class Client {
             }
         }
 
-        // Read system information XML if possible
-        try {
-            SystemInfomation info = XMLParser.parse(configurationPath);
-        } catch (FileNotFoundException e) {
-            // TODO Fall back on protocol based system discovery if XML error
-            System.out.println("FATAL: XML file " + configurationPath + " does not exist");
-            System.exit(-1);
-        }
-
         // Attempt to create connection to ds-sim server
         Connection remoteConnection = null;
         try {
-            remoteConnection = new Connection(remoteAddress, port, verbose, debug);
+            remoteConnection = new Connection(SystemInfomation.remoteAddress,
+                    SystemInfomation.port,
+                    SystemInfomation.verbose,
+                    SystemInfomation.debug);
         } catch (IOException e) {
             System.out.println("FATAL: Could not create a connection to DS-Sim server");
             System.exit(-1);
@@ -111,7 +97,7 @@ class Client {
                 switch (nextAction.intent) {
 
                     case SWITCH_STATE -> {
-                        if (debug) System.out.println("SWITCHING STATE: " + nextAction.state);
+                        if (SystemInfomation.debug) System.out.println("SWITCHING STATE: " + nextAction.state);
                         switch (nextAction.state) {
                             case DEFAULT -> {
                                 protocolState = ProtocolState.DEFAULT;

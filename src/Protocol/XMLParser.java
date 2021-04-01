@@ -1,3 +1,5 @@
+package Protocol;
+
 import Protocol.SystemInfomation;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;

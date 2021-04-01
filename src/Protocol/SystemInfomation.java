@@ -4,7 +4,14 @@ import java.util.ArrayList;
 
 public class SystemInfomation {
 
-    public ArrayList<Server> serverList = new ArrayList<>();
+    public static boolean verbose = false;
+    public static boolean debug = false;
+    public static String configurationPath = "ds-system.xml";
+    public static String algorithmName = "allToLargest";
+    public static String remoteAddress = "127.0.0.1";
+    public static int port = 50000;
+
+    public static ArrayList<Server> serverList = new ArrayList<>();
 
     private SystemInfomation() {}
 

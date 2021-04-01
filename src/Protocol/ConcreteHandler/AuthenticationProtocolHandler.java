@@ -10,7 +10,7 @@ public class AuthenticationProtocolHandler implements ProtocolHandler {
 
     @Override
     public Action onEnterState() {
-        return new Action(Intent.SEND_MESSAGE, "AUTH TestUsername");
+        return new Action(Intent.SEND_MESSAGE, "AUTH luke");
     }
 
     @Override
