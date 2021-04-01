@@ -3,10 +3,10 @@ package Protocol;
 import java.util.ArrayList;
 
 public class SystemInfomation {
-    
+
     public static boolean verbose = false;
     public static boolean debug = false;
-    public static String configurationPath = "ds-system.xml";
+    public static String configurationPath = "../../ds-system.xml";
     public static String algorithmName = "allToLargest";
     public static String remoteAddress = "127.0.0.1";
     public static int port = 50000;
