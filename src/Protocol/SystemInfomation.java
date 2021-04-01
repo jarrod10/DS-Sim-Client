@@ -33,7 +33,6 @@ public class SystemInfomation {
 
     /**
      * Calculates highest core count server.
-     * @param serverList List of all servers from XML file
      * @return Returns Server object with highest Core count.
      */
         public static Server mostCores() {
@@ -41,7 +40,7 @@ public class SystemInfomation {
             if (serverList.size() > 0) {
                 for (int i = 0; i < serverList.size(); i++) {
                     if (serverList.get(i).core > serverList.get(highestId).core)
-                        highestId = serverList.get(i).serverID;
+                        highestId = i;
                 }
                 return serverList.get(highestId);
             }
