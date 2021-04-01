@@ -4,13 +4,6 @@ import java.util.ArrayList;
 
 public class SystemInfomation {
 
-    public static boolean verbose = false;
-    public static boolean debug = false;
-    public static String configurationPath = "ds-system.xml";
-    public static String algorithmName = "allToLargest";
-    public static String remoteAddress = "127.0.0.1";
-    public static int port = 50000;
-
     public static ArrayList<Server> serverList = new ArrayList<>();
 
     private SystemInfomation() {}
@@ -31,17 +24,21 @@ public class SystemInfomation {
         serverList.add(newServer);
     }
 
-    public static Server mostCores() {
-        int highest = 0;
-        int highestid = 0;
-        Server server = new Server();
-        for (int i = 0; i < serverList.size(); i++) {
-            if (serverList.get(i).core > highest) {
-                highest = serverList.get(i).core;
-                highestid = i;
+    /**
+     * Calculates highest core count server.
+     * @param serverList List of all servers from XML file
+     * @return Returns Server object with highest Core count.
+     */
+        public static Server mostCores() {
+            int highestId = 0;
+            if (serverList.size() > 0) {
+                for (int i = 0; i < serverList.size(); i++) {
+                    if (serverList.get(i).core > serverList.get(highestId).core)
+                        highestId = serverList.get(i).serverID;
+                }
+                return serverList.get(highestId);
             }
+            return null;
         }
-        return serverList.get(highestid);
-    }
 
 }
