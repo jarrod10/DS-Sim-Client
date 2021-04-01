@@ -32,15 +32,19 @@ public class SystemInfomation {
     }
 
     public static Server mostCores(ArrayList<Server> serverList) {
-        int highest = 0;
-        Server server = new Server();
-        for (int i = 0; i < serverList.size(); i++) {
-            if (serverList.get(i).core > highest) {
-                highest = serverList.get(i).core;
+        int highestId = 0;
+//        Server server = new Server();
+        if (serverList.size() > 0) {
+            for (int i = 0; i < serverList.size(); i++) {
+                if (serverList.get(i).core > serverList.get(highestId).core) {
+                    highestId = serverList.get(i).serverID;
+                }
+//                highestId = serverList.get(i).;
             }
-            server = serverList.get(i);
+            return serverList.get(highestId);
         }
-        return server;
+
+        return null;
     }
 
 }
