@@ -1,22 +1,21 @@
-package Protocol.ConcreteHandler;
+package DSSimProtocol.ProtocolHandler;
 
-import Protocol.Action;
-import Protocol.ProtocolHandler;
-import Protocol.Intent;
-import Protocol.UnrecognisedCommandException;
+import DSSimProtocol.Action;
+import DSSimProtocol.ActionIntent;
+import DSSimProtocol.UnrecognisedCommandException;
 
 public class FinalProtocolHandler implements ProtocolHandler {
 
     @Override
     public Action onEnterState() {
-        return new Action(Intent.SEND_MESSAGE, "QUIT");
+        return new Action(ActionIntent.SEND_MESSAGE, "QUIT");
     }
 
     @Override
     public Action onReceiveMessage(String message) throws UnrecognisedCommandException {
         switch (message) {
             case "QUIT" -> {
-                return new Action(Intent.QUIT);
+                return new Action(ActionIntent.QUIT);
             }
         
             default -> {

@@ -1,56 +1,47 @@
-package Protocol;
+package DSSimProtocol;
 
 public class Action {
 
-    public Intent intent;
-
-    // For Intent.SWITCH_STATE
+    public ActionIntent intent;
     public ProtocolState state;
-
-    // For Intent.SEND_MESSAGE
     public String message;
-
-    // For Intent.COMMAND_SCHD
     public Job job;
     public Server server;
-
-    // For Intent.COMMAND_CNTJ
     public JobState jobState;
+
 
     public Action() {
     }
 
-    public Action(Intent intent) {
+    public Action(ActionIntent intent) {
         this.intent = intent;
     }
 
-    // An action to send arbitrary text to DS-Sim-Server
-    public Action(Intent intent, String message) {
+    public Action(ActionIntent intent, String message) {
         this.intent = intent;
         this.message = message;
     }
 
-    // An action to schedule a job
-    public Action(Intent intent, Job job, Server server) {
-        this.intent = intent;
-        this.job = job;
-        this.server = server;
-    }
-    public Action(Intent intent, Server server, Job job) {
+    public Action(ActionIntent intent, Job job, Server server) {
         this.intent = intent;
         this.job = job;
         this.server = server;
     }
 
-    public Action(Intent intent, Job job, Server server, JobState jobState) {
+    public Action(ActionIntent intent, Server server, Job job) {
+        this.intent = intent;
+        this.job = job;
+        this.server = server;
+    }
+
+    public Action(ActionIntent intent, Job job, Server server, JobState jobState) {
         this.intent = intent;
         this.job = job;
         this.server = server;
         this.jobState = jobState;
     }
 
-    // An action to switch protocol states in the client
-    public Action(Intent intent, ProtocolState state) {
+    public Action(ActionIntent intent, ProtocolState state) {
         this.intent = intent;
         this.state = state;
     }

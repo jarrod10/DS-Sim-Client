@@ -1,4 +1,7 @@
-package Protocol;
+package DSSimProtocol.ProtocolHandler;
+
+import DSSimProtocol.Action;
+import DSSimProtocol.UnrecognisedCommandException;
 
 public interface ProtocolHandler {
 

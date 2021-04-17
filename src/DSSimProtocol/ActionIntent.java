@@ -1,10 +1,9 @@
-package Protocol;
+package DSSimProtocol;
 
-public enum Intent {
+public enum ActionIntent {
     SEND_MESSAGE,
     SWITCH_STATE,
     COMMAND_SCHD,
     COMMAND_CNTJ,
-    QUIT,
-    LOOP //Legacy
+    QUIT
 }

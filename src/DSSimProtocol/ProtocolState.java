@@ -1,4 +1,4 @@
-package Protocol;
+package DSSimProtocol;
 
 public enum ProtocolState {
     DEFAULT,

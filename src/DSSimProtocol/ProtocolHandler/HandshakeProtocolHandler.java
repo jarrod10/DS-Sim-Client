@@ -1,23 +1,22 @@
-package Protocol.ConcreteHandler;
+package DSSimProtocol.ProtocolHandler;
 
-import Protocol.Action;
-import Protocol.ProtocolHandler;
-import Protocol.Intent;
-import Protocol.ProtocolState;
-import Protocol.UnrecognisedCommandException;
+import DSSimProtocol.Action;
+import DSSimProtocol.ActionIntent;
+import DSSimProtocol.ProtocolState;
+import DSSimProtocol.UnrecognisedCommandException;
 
 public class HandshakeProtocolHandler implements ProtocolHandler {
 
     @Override
     public Action onEnterState() {
-        return new Action(Intent.SEND_MESSAGE, "HELO");
+        return new Action(ActionIntent.SEND_MESSAGE, "HELO");
     }
 
     @Override
     public Action onReceiveMessage(String message) throws UnrecognisedCommandException {
 
         return switch (message) {
-            case "OK" -> new Action(Intent.SWITCH_STATE, ProtocolState.AUTHENTICATING);
+            case "OK" -> new Action(ActionIntent.SWITCH_STATE, ProtocolState.AUTHENTICATING);
             default -> throw new UnrecognisedCommandException("Unrecognised command: " + message);
         };
     }

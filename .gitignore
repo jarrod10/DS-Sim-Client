@@ -16,7 +16,6 @@
 *.class
 
 # Test Files
-*.sh
 *.tar
 S1testConfigs/
 
