@@ -11,7 +11,7 @@ public class DefaultProtocolHandler implements ProtocolHandler {
 
     @Override
     public Action onEnterState() {
-        return new Action(ActionIntent.SWITCH_STATE, ProtocolState.HANDSHAKING);
+        return new Action(Action.ActionIntent.SWITCH_STATE, ProtocolState.HANDSHAKING);
     }
 
     @Override

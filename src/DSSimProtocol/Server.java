@@ -8,6 +8,14 @@ public class Server {
      */
 
     public String serverType;
+
+    public enum ServerState {
+        INACTIVE,
+        BOOTING,
+        IDLE,
+        ACTIVE,
+        UNAVAILABLE
+    }
     public int serverID;
     public ServerState serverState;
     public int curStartTime;
@@ -16,6 +24,7 @@ public class Server {
     public int disk;
     public int limit;
     public int bootupTime;
+
     public float hourlyRate;
 
     public Server() {
@@ -62,5 +71,4 @@ public class Server {
         this.mem = mem;
         this.disk = disk;
     }
-
 }

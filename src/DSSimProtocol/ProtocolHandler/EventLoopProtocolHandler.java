@@ -18,7 +18,7 @@ public class EventLoopProtocolHandler implements ProtocolHandler {
             java.lang.System.exit(-1);
         }
 
-        return new Action(ActionIntent.SEND_MESSAGE, "REDY");
+        return new Action(Action.ActionIntent.SEND_MESSAGE, "REDY");
     }
 
     @Override
@@ -29,7 +29,7 @@ public class EventLoopProtocolHandler implements ProtocolHandler {
         switch (messageParts[0]) {
 
             case "OK", "JCPL" -> {
-                return new Action(ActionIntent.SEND_MESSAGE, "REDY");
+                return new Action(Action.ActionIntent.SEND_MESSAGE, "REDY");
             }
 
             case "JOBN" -> {
@@ -38,11 +38,11 @@ public class EventLoopProtocolHandler implements ProtocolHandler {
                 //Grabs largest server from server list
                 Server server = SystemInformation.mostCores();
 
-                return new Action(ActionIntent.COMMAND_SCHD, job, server);
+                return new Action(Action.ActionIntent.COMMAND_SCHD, job, server);
             }
 
             case "NONE" -> {
-                return new Action(ActionIntent.SWITCH_STATE, ProtocolState.QUITTING);
+                return new Action(Action.ActionIntent.SWITCH_STATE, ProtocolState.QUITTING);
             }
 
             default -> {

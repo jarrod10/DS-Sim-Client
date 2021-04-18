@@ -99,6 +99,7 @@ class Client {
 
                     case SWITCH_STATE -> {
                         if (SystemInformation.debug) java.lang.System.out.println("SWITCHING STATE: " + nextAction.state);
+
                         switch (nextAction.state) {
                             case DEFAULT -> protocolHandler = new DefaultProtocolHandler();
                             case HANDSHAKING -> protocolHandler = new HandshakeProtocolHandler();
@@ -106,8 +107,10 @@ class Client {
                             case EVENT_LOOP -> protocolHandler = new EventLoopProtocolHandler();
                             case QUITTING -> protocolHandler = new FinalProtocolHandler();
                         }
+
                         actionQueue.add(protocolHandler.onEnterState());
                     }
+
                     case SEND_MESSAGE -> remoteConnection.writeString(nextAction.message);
                     case COMMAND_SCHD -> remoteConnection.writeString("SCHD " +
                             nextAction.job.jobID + " " +

@@ -2,12 +2,21 @@ package DSSimProtocol;
 
 public class Action {
 
+    public enum ActionIntent {
+        SEND_MESSAGE,
+        SWITCH_STATE,
+        COMMAND_SCHD,
+        COMMAND_CNTJ,
+        QUIT
+    }
+
     public ActionIntent intent;
     public ProtocolState state;
     public String message;
     public Job job;
     public Server server;
-    public JobState jobState;
+
+    public Job.JobState jobState;
 
 
     public Action() {
@@ -34,7 +43,7 @@ public class Action {
         this.server = server;
     }
 
-    public Action(ActionIntent intent, Job job, Server server, JobState jobState) {
+    public Action(ActionIntent intent, Job job, Server server, Job.JobState jobState) {
         this.intent = intent;
         this.job = job;
         this.server = server;
@@ -45,5 +54,4 @@ public class Action {
         this.intent = intent;
         this.state = state;
     }
-
 }
