@@ -37,7 +37,8 @@ class Client {
                 }
                 case "-a" -> {
                     try {
-                        SystemInformation.algorithmName = args[++i];
+                        SystemInformation.algorithmName = SystemInformation.Algorithms.valueOf(args[++i]);
+                        // SystemInformation.algorithmName = args[++i];
                     } catch (ArrayIndexOutOfBoundsException e) {
                         java.lang.System.out.println("FATAL: No algorithm provided with '-a' argument");
                         java.lang.System.exit(-1);
@@ -104,7 +105,16 @@ class Client {
                             case DEFAULT -> protocolHandler = new DefaultProtocolHandler();
                             case HANDSHAKING -> protocolHandler = new HandshakeProtocolHandler();
                             case AUTHENTICATING -> protocolHandler = new AuthenticationProtocolHandler();
-                            case EVENT_LOOP -> protocolHandler = new EventLoopProtocolHandler();
+                            case EVENT_LOOP -> {
+                                switch (SystemInformation.algorithmName) {
+                                    case MinTSC -> protocolHandler = new MinServerCostAlgorithmHandler();
+                                    case Default -> protocolHandler = new DefaultEventLoopProtocolHandler();
+                                    default -> {
+                                        System.out.println("FATAL: No algorithm Avaliable");
+                                        protocolHandler = new FinalProtocolHandler();
+                                    }
+                                }
+                            }
                             case QUITTING -> protocolHandler = new FinalProtocolHandler();
                         }
 
@@ -120,6 +130,7 @@ class Client {
                             nextAction.server.serverType + " " +
                             nextAction.server.serverID + " " +
                             nextAction.jobState.getIndex());
+                    case MULTIPART -> {}
                     case QUIT -> System.exit(1);
                 }
             }

@@ -23,7 +23,7 @@ S1testConfigs/
 *.xml
 
 #.vscode directory files
-.vscode
+# .vscode
 
 # Log file
 *.log

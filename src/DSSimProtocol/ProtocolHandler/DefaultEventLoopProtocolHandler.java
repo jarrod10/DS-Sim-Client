@@ -1,11 +1,10 @@
 package DSSimProtocol.ProtocolHandler;
 
 import DSSimProtocol.*;
-import DSSimProtocol.SystemInformation;
 
 import java.io.FileNotFoundException;
 
-public class EventLoopProtocolHandler implements ProtocolHandler {
+public class DefaultEventLoopProtocolHandler implements ProtocolHandler {
 
     @Override
     public Action onEnterState() {

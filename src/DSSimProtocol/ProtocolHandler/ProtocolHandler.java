@@ -7,6 +7,5 @@ public interface ProtocolHandler {
 
     public Action onEnterState();
 
-    public Action onReceiveMessage(String message) throws UnrecognisedCommandException;
-
+    public abstract Action onReceiveMessage(String message) throws UnrecognisedCommandException;
 }

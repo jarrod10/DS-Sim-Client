@@ -10,12 +10,23 @@ public class Server {
     public String serverType;
 
     public enum ServerState {
-        INACTIVE,
-        BOOTING,
-        IDLE,
-        ACTIVE,
-        UNAVAILABLE
+        INACTIVE(0),
+        BOOTING(1),
+        IDLE(2),
+        ACTIVE(3),
+        UNAVAILABLE(4);
+
+        private final int index;
+
+        ServerState(int index) {
+            this.index = index;
+        }
+
+        public int getIndex() {
+            return index;
+        }
     }
+    
     public int serverID;
     public ServerState serverState;
     public int curStartTime;
