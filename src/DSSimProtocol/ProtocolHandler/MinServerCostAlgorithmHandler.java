@@ -13,7 +13,7 @@ import DSSimProtocol.UnrecognisedCommandException;
 import DSSimProtocol.XMLParser;
 import DSSimProtocol.Server.ServerState;
 
-public class MinServerCostAlgorithmHandler implements ProtocolHandler {
+public class MinServerCostAlgorithmHandler implements AlgorithmProtocolHandler {
 
     boolean MultiPart = false;
     int nRecs = 0;
@@ -61,6 +61,7 @@ public class MinServerCostAlgorithmHandler implements ProtocolHandler {
 
                 // here is the code that runs when all server data is finished sending and scheduling decision has to be made
                 case "." -> {
+                    
                     return new Action(Action.ActionIntent.COMMAND_SCHD, job, avaliableServers.get(0));
                 }
     
@@ -90,5 +91,15 @@ public class MinServerCostAlgorithmHandler implements ProtocolHandler {
             }
             return new Action(Action.ActionIntent.MULTIPART);
         }
+    }
+
+    /**
+     * Finds the server with the lowest opperating cost 
+     * 
+     * @return
+     */
+    public static Server lowestCost() {
+        // avaliableServers
+        return null;
     }
 }

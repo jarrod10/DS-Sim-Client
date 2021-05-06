@@ -3,8 +3,9 @@ package DSSimProtocol.ProtocolHandler;
 import DSSimProtocol.*;
 
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
 
-public class DefaultEventLoopProtocolHandler implements ProtocolHandler {
+public class DefaultEventLoopProtocolHandler implements AlgorithmProtocolHandler {
 
     @Override
     public Action onEnterState() {
@@ -35,7 +36,7 @@ public class DefaultEventLoopProtocolHandler implements ProtocolHandler {
                 Job job = new Job(messageParts);
 
                 //Grabs largest server from server list
-                Server server = SystemInformation.mostCores();
+                Server server = mostCores();
 
                 return new Action(Action.ActionIntent.COMMAND_SCHD, job, server);
             }
@@ -50,4 +51,24 @@ public class DefaultEventLoopProtocolHandler implements ProtocolHandler {
 
         }
     }
+
+        /**
+     * Finds the server with the largest core count.
+     *
+     * @return Returns server object with largest core count.
+     */
+    public static Server mostCores() {
+        int highestId = 0;
+        ArrayList<Server> serverList = SystemInformation.serverList;
+        
+        if (serverList.size() > 0) {
+            for (int i = 0; i < serverList.size(); i++) {
+                if (serverList.get(i).core > serverList.get(highestId).core)
+                    highestId = i;
+            }
+            return serverList.get(highestId);
+        }
+        return null;
+    }
+
 }

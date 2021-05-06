@@ -69,21 +69,4 @@ public class SystemInformation {
         serverList.add(newServer);
     }
 
-    /**
-     * Finds the server with the largest core count.
-     *
-     * @return Returns server object with largest core count.
-     */
-    public static Server mostCores() {
-        int highestId = 0;
-        if (serverList.size() > 0) {
-            for (int i = 0; i < serverList.size(); i++) {
-                if (serverList.get(i).core > serverList.get(highestId).core)
-                    highestId = i;
-            }
-            return serverList.get(highestId);
-        }
-        return null;
-    }
-
 }
