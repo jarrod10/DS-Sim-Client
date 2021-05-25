@@ -18,7 +18,7 @@ public class MinServerCostAlgorithmHandler implements AlgorithmProtocolHandler {
     boolean MultiPart = false;
     int nRecs = 0;
     int count = 0;
-    List<Server> avaliableServers;
+    List<Server> avaliableServers = null;
     Job job;
 
     @Override
@@ -61,7 +61,7 @@ public class MinServerCostAlgorithmHandler implements AlgorithmProtocolHandler {
 
                 // here is the code that runs when all server data is finished sending and scheduling decision has to be made
                 case "." -> {
-                    
+                    Server server = lowestCost();
                     return new Action(Action.ActionIntent.COMMAND_SCHD, job, avaliableServers.get(0));
                 }
     
@@ -96,10 +96,15 @@ public class MinServerCostAlgorithmHandler implements AlgorithmProtocolHandler {
     /**
      * Finds the server with the lowest opperating cost 
      * 
-     * @return
+     * @return the server with the lowest cost to operate
      */
-    public static Server lowestCost() {
-        // avaliableServers
+    Server lowestCost() {
+        // avaliableServers.
+        List<Server> servers = new ArrayList<Server>();
+        List<Server> AllServers = SystemInformation.serverList;
+        for (Server server : avaliableServers) {
+            // servers.add(AllServers.)
+        }
         return null;
     }
 }

@@ -57,7 +57,7 @@ public class DefaultEventLoopProtocolHandler implements AlgorithmProtocolHandler
      *
      * @return Returns server object with largest core count.
      */
-    public static Server mostCores() {
+    Server mostCores() {
         int highestId = 0;
         ArrayList<Server> serverList = SystemInformation.serverList;
         
