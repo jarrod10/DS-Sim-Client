@@ -19,7 +19,7 @@ public class SystemInformation {
 
     public enum Algorithms {
         Default(0), // AllToLargest
-        MinTSC(1);  // Minimum total server cost
+        HolyGrail(1);  // Minimum total server cost
 
         private final int index;
 

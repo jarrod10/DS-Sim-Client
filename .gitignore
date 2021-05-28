@@ -18,9 +18,11 @@
 # Test Files
 *.tar
 S1testConfigs/
+src/test_results
 
 # Ds-Server files
 *.xml
+src/ds-server
 
 #.vscode directory files
 # .vscode

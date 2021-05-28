@@ -107,7 +107,7 @@ class Client {
                             case AUTHENTICATING -> protocolHandler = new AuthenticationProtocolHandler();
                             case EVENT_LOOP -> {
                                 switch (SystemInformation.algorithmName) {
-                                    case MinTSC -> protocolHandler = new MinServerCostAlgorithmHandler();
+                                    case HolyGrail -> protocolHandler = new HolyGrailAlgorithmHandler();
                                     case Default -> protocolHandler = new DefaultEventLoopProtocolHandler();
                                     default -> {
                                         System.out.println("FATAL: No algorithm Avaliable");
