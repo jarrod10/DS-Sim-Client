@@ -139,31 +139,66 @@ class Client {
                         int loopCount = 0;
                         String FinalString = "";
                         // while (!loopFinished) {
-
-
+                            
+                            
                             remoteConnection.writeString(nextAction.message);
                             switch (nextAction.source) {
                                 case "GETS" -> {
                                     String[] messageParts = new String[3];
-                                    if (remoteConnection.readReady()) {
+                                    // if (remoteConnection.readReady()) {  // commented out this non blocking check because it was causing issues 
                                         messageParts = remoteConnection.readString().split(" ");
-                                    }
+                                    // }
+
                                     String message= "";
+                                    remoteConnection.writeString("OK");
                                     while (loopCount < Integer.parseInt(messageParts[1])) {
-                                        remoteConnection.writeString("OK");
                                         if (remoteConnection.readReady()) {
                                             message = remoteConnection.readString();
                                         }
-                                        
-                                        loopCount++;
-                                        FinalString += message + "\n";
+                                        if (message.length() > 0) {
+                                            loopCount++;
+                                            FinalString += message + " ";
+                                        }
                                     }
                                 }
                                 
                                 case "LSTJ" -> {
+                                    // String[] messageParts = new String[3];
+                                    // if (remoteConnection.readReady()) {
+                                    //     messageParts = remoteConnection.readString().split(" ");
+                                    // }
+                                    String message = "";
                                     
+                                    if (remoteConnection.readReady()) {
+                                        message = remoteConnection.readString();
+                                        // message = remoteConnection.readString();
+                                    }
+                                    remoteConnection.writeString("OK");
+                                    
+                                    // some bug where message != "." when message = "." is returning true, expression is returing opposite
+                                    // System.out.println(message == ".");
+                                    while (!message.equals(".")) {
+                                        if (remoteConnection.readReady()) {
+                                            message = remoteConnection.readString();
+                                        }
+
+                                        if (!message.equals(".")) {
+                                        // if (message.length() > 0 && message == ".") {
+                                            loopCount++;
+                                            FinalString += message + " ";
+                                        // }
+                                            remoteConnection.writeString("OK");
+                                        }
+                                    }
                                 }
-                                
+
+                                // case "LSTJ2" -> {
+                                //     String message= "";
+                                //     if (remoteConnection.readReady()) {
+                                //         message = remoteConnection.readString();
+                                //     }
+                                // }
+                                 
                                 default -> {break;}
                             }
 
@@ -179,7 +214,7 @@ class Client {
                         // }
 
                         // perform final part of multipart
-                        actionQueue.add(protocolHandler.onReceiveMessage(FinalString));
+                        actionQueue.add(protocolHandler.onReceiveMessage(FinalString + nextAction.source));
 
                     }
                     case QUIT -> System.exit(1);

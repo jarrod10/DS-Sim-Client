@@ -36,7 +36,7 @@ public class Action {
     // used for multipart
     public Action(ActionIntent MultiPartIntent, String MultiPartSource, String message) {
         this.intent = MultiPartIntent;
-        source = MultiPartSource;
+        this.source = MultiPartSource;
         this.message = message;
     }
 

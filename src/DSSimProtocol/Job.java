@@ -59,6 +59,25 @@ public class Job {
     }
 
     /**
+     * Constructs a job object from individual variables
+     *
+     * @param jobState The current state of the job
+     * @param jobID      An arbitrary but unique ID for each job
+     * @param estRuntime An estimate of the runtime of a job
+     * @param cpu        The required number of CPU cores to run the job
+     * @param memory     The required amount of memory to run the job
+     * @param disk       The required amount of disk space to run the job
+     */
+    public Job(int jobID, JobState jobState, int estRuntime, int cpu, int memory, int disk) {
+        this.jobState = jobState;
+        this.jobID = jobID;
+        this.estRuntime = estRuntime;
+        this.cpu = cpu;
+        this.memory = memory;
+        this.disk = disk;
+    }
+
+    /**
      * Constructs a job object from an array of strings sent by the DSSimServer, such as sent by the JOBN command
      *
      * @param messageParts An array of strings in the order: submitTime, jobID, estRuntime, cpu, memory, disk

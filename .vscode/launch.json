@@ -17,7 +17,7 @@
             "name": "Debug Client HolyGrail Algo",
             "request": "launch",
             "mainClass": "Client",
-            // "projectName": "DS-Sim-Client-Stage2_c37ef502",
+            // "projectName": "DS-Sim-Client-Stage2",
             "args": "-v -d -a HolyGrail"
         }
     ]
