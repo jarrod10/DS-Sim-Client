@@ -12,6 +12,7 @@ public class Action {
     }
 
     public ActionIntent intent;
+    public String source;
     public ProtocolState state;
     public String message;
     public Job job;
@@ -29,6 +30,13 @@ public class Action {
 
     public Action(ActionIntent intent, String message) {
         this.intent = intent;
+        this.message = message;
+    }
+
+    // used for multipart
+    public Action(ActionIntent MultiPartIntent, String MultiPartSource, String message) {
+        this.intent = MultiPartIntent;
+        source = MultiPartSource;
         this.message = message;
     }
 

@@ -6,7 +6,7 @@ public class SystemInformation {
 
     public static boolean verbose = false;
     public static boolean debug = false;
-    public static String configurationPath = "ds-system.xml";
+    public static String configurationPath = "src/ds-system.xml";
     // public static String algorithmName = "allToLargest";
     public static Algorithms algorithmName = Algorithms.Default;
     public static String remoteAddress = "127.0.0.1";

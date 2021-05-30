@@ -14,11 +14,11 @@
         },
         {
             "type": "java",
-            "name": "Debug Client MinTSC Algo",
+            "name": "Debug Client HolyGrail Algo",
             "request": "launch",
             "mainClass": "Client",
             // "projectName": "DS-Sim-Client-Stage2_c37ef502",
-            "args": "-v -d -a MinTSC"
+            "args": "-v -d -a HolyGrail"
         }
     ]
 }

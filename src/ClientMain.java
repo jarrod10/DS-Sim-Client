@@ -130,7 +130,58 @@ class Client {
                             nextAction.server.serverType + " " +
                             nextAction.server.serverID + " " +
                             nextAction.jobState.getIndex());
-                    case MULTIPART -> {}
+                    case MULTIPART -> {
+                        // make some mini while loop to loop until multipart isn't needed anymore
+                        // after while loop is completed make sure you do one more normal loop and then continue with normal code
+                        // this is so it can return all the multipart loop stuff without having to change how the normal loop works for this special case.
+                        
+                        // boolean loopFinished = false;
+                        int loopCount = 0;
+                        String FinalString = "";
+                        // while (!loopFinished) {
+
+
+                            remoteConnection.writeString(nextAction.message);
+                            switch (nextAction.source) {
+                                case "GETS" -> {
+                                    String[] messageParts = new String[3];
+                                    if (remoteConnection.readReady()) {
+                                        messageParts = remoteConnection.readString().split(" ");
+                                    }
+                                    String message= "";
+                                    while (loopCount < Integer.parseInt(messageParts[1])) {
+                                        remoteConnection.writeString("OK");
+                                        if (remoteConnection.readReady()) {
+                                            message = remoteConnection.readString();
+                                        }
+                                        
+                                        loopCount++;
+                                        FinalString += message + "\n";
+                                    }
+                                }
+                                
+                                case "LSTJ" -> {
+                                    
+                                }
+                                
+                                default -> {break;}
+                            }
+
+                            
+                            // String receivedMessage = "";
+                            // if (remoteConnection.readReady()) {
+                            //     receivedMessage = remoteConnection.readString();
+                            // }
+                            
+                            // if (receivedMessage.length() > 0) {
+                            //     actionQueue.add(protocolHandler.onReceiveMessage(receivedMessage));
+                            // }
+                        // }
+
+                        // perform final part of multipart
+                        actionQueue.add(protocolHandler.onReceiveMessage(FinalString));
+
+                    }
                     case QUIT -> System.exit(1);
                 }
             }

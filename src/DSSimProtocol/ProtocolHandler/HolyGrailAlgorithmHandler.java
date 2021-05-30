@@ -19,10 +19,11 @@ public class HolyGrailAlgorithmHandler implements AlgorithmProtocolHandler {
     EmultiPart emultiPart = EmultiPart.NULL;
     int nRecs = 0;
     int count = 0;
+    int serverloopCount = 0; 
     List<Server> avaliableServers = null;
     Job job;
     
-    enum EmultiPart {
+    public enum EmultiPart {
         NULL,
         GETS,
         LSTJ,
@@ -44,7 +45,7 @@ public class HolyGrailAlgorithmHandler implements AlgorithmProtocolHandler {
 
     @Override
     public Action onReceiveMessage(String message) throws UnrecognisedCommandException {
-        String[] messageParts = message.split(" ");
+        String[] messageParts = message.split(" |/n");
 
         if (!MultiPart) {
             switch (messageParts[0]) {
@@ -55,15 +56,26 @@ public class HolyGrailAlgorithmHandler implements AlgorithmProtocolHandler {
     
                 case "JOBN" -> {
                     job = new Job(messageParts);
-                    emultiPart = EmultiPart.GETS;
-                    return new Action(Action.ActionIntent.SEND_MESSAGE, "GETS Capable " + job.cpu + " " + job.memory + " " + job.disk);
+                    // emultiPart = EmultiPart.GETS;
+                    
+                    return new Action(Action.ActionIntent.MULTIPART, "GETS", "GETS Capable " + job.cpu + " " + job.memory + " " + job.disk);
+                    // return new Action(Action.ActionIntent.SEND_MESSAGE, "GETS Capable " + job.cpu + " " + job.memory + " " + job.disk);
                 }
 
                 case "DATA" -> {
                     MultiPart = true;
-                    count = 0;
+                    // count = 0;
                     nRecs = Integer.parseInt(messageParts[1]);
-                    avaliableServers = new ArrayList<Server>(nRecs);
+                    switch (emultiPart) {
+                        case GETS -> {
+                            avaliableServers = new ArrayList<Server>(nRecs);
+                        }
+
+                        case LSTJ -> {}
+
+                        default -> {break;}
+                    }
+
                     return new Action(Action.ActionIntent.SEND_MESSAGE, "OK");
                 }
 
@@ -75,9 +87,32 @@ public class HolyGrailAlgorithmHandler implements AlgorithmProtocolHandler {
                 // so it fits better in another server
 
                 case "." -> {
-                    Server server = lowestCost();
+                    switch (emultiPart) {
+                        case GETS -> {
+                            emultiPart = EmultiPart.LSTJ;
+                            return new Action(Action.ActionIntent.SEND_MESSAGE, "LSTJ " + avaliableServers.get(serverloopCount++).serverType +  " 0"); // send LSTJ command
+                        }
+
+                        case LSTJ -> {
+                            // if (count >= nRecs) {
+                            //     MultiPart = false;
+                            //     // count = 0;
+                            //     emultiPart = EmultiPart.NULL;
+                            // }
+                            if (serverloopCount == avaliableServers.size()) {
+                                emultiPart = EmultiPart.NULL;
+                            } 
+                            return new Action(Action.ActionIntent.SEND_MESSAGE, "LSTJ " + avaliableServers.get(serverloopCount++).serverType +  " 0"); // send LSTJ command
+                        }
+
+                        default -> {break;}
+                    }
+                    // Server server = lowestCost();
                     // return new Action(Action.ActionIntent.COMMAND_SCHD, job, avaliableServers.get(0));
-                    return new Action(Action.ActionIntent.SEND_MESSAGE, "LSTJ " + job.cpu + " " + job.memory + " " + job.disk); // send LSTJ command
+                    // nRecs = Integer.parseInt(messageParts[1]);
+                    // MultiPart = true;
+                    // emultiPart = EmultiPart.LSTJ;
+                    return new Action(Action.ActionIntent.SEND_MESSAGE, "LSTJ " + avaliableServers.get(serverloopCount++).serverType +  " 0"); // send LSTJ command
                 }
     
                 case "NONE" -> {
@@ -104,13 +139,27 @@ public class HolyGrailAlgorithmHandler implements AlgorithmProtocolHandler {
         
                     if (count >= nRecs) {
                         MultiPart = false;
-                        emultiPart = EmultiPart.NULL;
+                        count = 0;
+                        // if (serverloopCount == avaliableServers.size()) {
+                        //     emultiPart = EmultiPart.NULL;
+                        // } else {
+                            // }
+                        // emultiPart = EmultiPart.LSTJ;
                         return new Action(Action.ActionIntent.SEND_MESSAGE, "OK");
                     }
                 }
                 
                 case LSTJ -> {
+
+
+                    // count++;
                     
+                    // if (count >= nRecs) {
+                        //     // count = 0;
+                        //     emultiPart = EmultiPart.NULL;
+                        // }
+                    MultiPart = false;
+                    // return new Action(Action.ActionIntent.SEND_MESSAGE, "OK");
                 }
                 
                 case NULL -> {
