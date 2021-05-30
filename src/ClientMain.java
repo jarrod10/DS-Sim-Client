@@ -178,9 +178,9 @@ class Client {
                                     // some bug where message != "." when message = "." is returning true, expression is returing opposite
                                     // System.out.println(message == ".");
                                     while (!message.equals(".")) {
-                                        if (remoteConnection.readReady()) {
+                                        // if (remoteConnection.readReady()) {
                                             message = remoteConnection.readString();
-                                        }
+                                        // }
 
                                         if (!message.equals(".")) {
                                         // if (message.length() > 0 && message == ".") {

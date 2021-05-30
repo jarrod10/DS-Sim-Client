@@ -7,6 +7,7 @@ public class Action {
         SWITCH_STATE,
         COMMAND_SCHD,
         COMMAND_CNTJ,
+        COMMAND_MIGR,
         MULTIPART,
         QUIT
     }
