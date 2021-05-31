@@ -117,19 +117,20 @@ class Client {
                             }
                             case QUITTING -> protocolHandler = new FinalProtocolHandler();
                         }
-
+                        
                         actionQueue.add(protocolHandler.onEnterState());
                     }
-
+                    
                     case SEND_MESSAGE -> remoteConnection.writeString(nextAction.message);
                     case COMMAND_SCHD -> remoteConnection.writeString("SCHD " +
-                            nextAction.job.jobID + " " +
-                            nextAction.server.serverType + " " +
-                            nextAction.server.serverID);
+                    nextAction.job.jobID + " " +
+                    nextAction.server.serverType + " " +
+                    nextAction.server.serverID);
                     case COMMAND_CNTJ -> remoteConnection.writeString("CNTJ " +
-                            nextAction.server.serverType + " " +
-                            nextAction.server.serverID + " " +
-                            nextAction.jobState.getIndex());
+                    nextAction.server.serverType + " " +
+                    nextAction.server.serverID + " " +
+                    nextAction.jobState.getIndex());
+                    case COMMAND_MIGR -> remoteConnection.writeString(nextAction.message);
                     case MULTIPART -> {
                         // make some mini while loop to loop until multipart isn't needed anymore
                         // after while loop is completed make sure you do one more normal loop and then continue with normal code
@@ -168,23 +169,28 @@ class Client {
                                     //     messageParts = remoteConnection.readString().split(" ");
                                     // }
                                     String message = "";
-                                    
-                                    if (remoteConnection.readReady()) {
-                                        message = remoteConnection.readString();
+
+                                    // if (remoteConnection.readReady()) {
+                                        // Thread.sleep(100);
+                                        // message = 
+                                        remoteConnection.readString();
                                         // message = remoteConnection.readString();
-                                    }
+                                    // }
                                     remoteConnection.writeString("OK");
                                     
                                     // some bug where message != "." when message = "." is returning true, expression is returing opposite
                                     // System.out.println(message == ".");
                                     while (!message.equals(".")) {
                                         // if (remoteConnection.readReady()) {
+                                            // Thread.sleep(100);
                                             message = remoteConnection.readString();
                                         // }
 
                                         if (!message.equals(".")) {
-                                        // if (message.length() > 0 && message == ".") {
+                                            // if (message.length() > 0 && message == ".") {
+                                            // FinalString = "";
                                             loopCount++;
+                                            // System.out.println(FinalString);
                                             FinalString += message + " ";
                                         // }
                                             remoteConnection.writeString("OK");
@@ -215,9 +221,9 @@ class Client {
 
                         // perform final part of multipart
                         actionQueue.add(protocolHandler.onReceiveMessage(FinalString + nextAction.source));
-
                     }
                     case QUIT -> System.exit(1);
+                    default -> throw new IllegalArgumentException("Unexpected value: " + nextAction.intent);
                 }
             }
         }

@@ -56,7 +56,7 @@ public class HolyGrailAlgorithmHandler implements AlgorithmProtocolHandler {
                     int core = Integer.parseInt(messageParts[i+4]);
                     int mem = Integer.parseInt(messageParts[i+5]);
                     int disk = Integer.parseInt(messageParts[i+6]);
-                    avaliableServers.add(new avaliableServersStructure( new Server(serverType, serverID, serverState, curStartTime, core, mem, disk), Integer.parseInt(messageParts[i+7]), Integer.parseInt(messageParts[i+8])));
+                    avaliableServers.add(new avaliableServersStructure( new Server(serverType, serverID, serverState, curStartTime, core, mem, disk), Integer.parseInt(messageParts[i+7]), Integer.parseInt(messageParts[i+8]), true));
                 }
                 return new Action(Action.ActionIntent.SEND_MESSAGE, "OK");
             }
@@ -67,29 +67,43 @@ public class HolyGrailAlgorithmHandler implements AlgorithmProtocolHandler {
 
                 // possibly determine if LSTJ for previous query was "." by checking messageparts.length > 1
                 // this only works in this case as the message returned will only be "LSTJ"
-
-                for (int i = 0; i < (messageParts.length-2); i+=9) {
-                    int jobID = Integer.parseInt(messageParts[i+1]);
-                    Job.JobState jobState = JobState.valueOf(((Integer.parseInt(messageParts[i+2]) == 1) ? JobState.WAITING.toString() : JobState.RUNNING.toString()));
-                    int estRuntime = Integer.parseInt(messageParts[i+4]);
-                    int cpu = Integer.parseInt(messageParts[i+5]);
-                    int memory = Integer.parseInt(messageParts[i+6]);
-                    int disk = Integer.parseInt(messageParts[i+7]);
+                // System.out.println(message);
+                for (int i = 1; i < (messageParts.length-1); i+=7) {
+                    int jobID = Integer.parseInt(messageParts[i-1]);
+                    Job.JobState jobState = JobState.valueOf(((Integer.parseInt(messageParts[i+1-1]) == 1) ? JobState.WAITING.toString() : JobState.RUNNING.toString()));
+                    int estRuntime = Integer.parseInt(messageParts[i+3-1]);
+                    int cpu = Integer.parseInt(messageParts[i+4-1]);
+                    int memory = Integer.parseInt(messageParts[i+5-1]);
+                    int disk = Integer.parseInt(messageParts[i+6-1]);
 
                     listedJobs.get(serverloopCount-1).childList.add(new Job(jobID, jobState, estRuntime, cpu, memory, disk));
                 }
-                if (serverloopCount >= avaliableServers.size()) {
-                    listedJobs.add(new listedJobsStructure());
-                    return new Action(Action.ActionIntent.MULTIPART, "LSTJ", "GETS Type " + avaliableServers.get(serverloopCount++-1).server.serverType);
+                if (serverloopCount < avaliableServers.size()) {
+                    listedJobs.add(new listedJobsStructure(avaliableServers.get(serverloopCount).server.serverType, avaliableServers.get(serverloopCount).server.serverID));
+                    Action action = new Action(Action.ActionIntent.MULTIPART, "LSTJ", "LSTJ " + avaliableServers.get(serverloopCount).server.serverType +  " " + avaliableServers.get(serverloopCount).server.serverID);
+                    serverloopCount++;
+                    return action; 
+                    // return new Action(Action.ActionIntent.MULTIPART, "LSTJ", "GETS Type " + avaliableServers.get(serverloopCount++).server.serverType);
                 } else {
                     for (int i = 0; i < listedJobs.size(); i++) {
                         if (listedJobs.get(i).childList.size() > 1) {
                             Server tgtServer = avaliableServers.get(avaliableServers.size()-1).server;
-                            for (int j = avaliableServers.size(); j >= 0; j--) {
-                                if (j != i)
-                                    tgtServer = avaliableServers.get(j).server;
+                            Job migrJob = listedJobs.get(i).childList.get(i+1);
+                            int topServerJobCoreDiff = 99;
+                            for (int j = 0; j < avaliableServers.size(); j++) {
+                                // j is job, i is server
+                                // write some algorithm to pick the best server here
+                                // write algorithm to search for best server and break when found.
+                                // possible algorithm, start from smallest server to largest and check what one has enough cores 
+                                //  to have max server untilisation
+                                if (j != i) {
+                                    if (avaliableServers.get(j).server.core - migrJob.cpu < topServerJobCoreDiff) {
+                                        tgtServer = avaliableServers.get(j).server;
+                                        topServerJobCoreDiff = avaliableServers.get(j).server.core - migrJob.cpu;
+                                    }
+                                }
                             }
-                            return new Action(Action.ActionIntent.COMMAND_MIGR, "MIGR " + job.jobID + " " + listedJobs.get(i).ServerType + " " + listedJobs.get(i).ServerID + " " + tgtServer.serverType + " " + tgtServer.serverID);
+                            return new Action(Action.ActionIntent.COMMAND_MIGR, "MIGR " + migrJob.jobID + " " + listedJobs.get(i).ServerType + " " + listedJobs.get(i).ServerID + " " + tgtServer.serverType + " " + tgtServer.serverID);
                         }
                     // return new Action(Action.ActionIntent.MULTIPART, "LSTJ", "GETS Type " + avaliableServers.get(serverloopCount++-1).serverType);
                     }
@@ -104,8 +118,8 @@ public class HolyGrailAlgorithmHandler implements AlgorithmProtocolHandler {
                         if (justSchd) {
                             justSchd = false;
                             Action action = new Action(Action.ActionIntent.MULTIPART, "LSTJ", "LSTJ " + avaliableServers.get(serverloopCount).server.serverType +  " " + avaliableServers.get(serverloopCount).server.serverID);
+                            listedJobs.add(new listedJobsStructure(avaliableServers.get(serverloopCount).server.serverType, avaliableServers.get(serverloopCount).server.serverID));
                             serverloopCount++;
-                            listedJobs.add(new listedJobsStructure());
                             return action;
                         } else {
                             return new Action(Action.ActionIntent.SEND_MESSAGE, "REDY");
@@ -114,6 +128,9 @@ public class HolyGrailAlgorithmHandler implements AlgorithmProtocolHandler {
 
                     case "JOBN" -> {
                         job = new Job(messageParts);
+                        firstTimeFlag = true;
+                        serverloopCount = 0;
+                        listedJobs = new ArrayList<listedJobsStructure>();
                         return new Action(Action.ActionIntent.MULTIPART, "GETS", "GETS Capable " + job.cpu + " " + job.memory + " " + job.disk);
                     }
 
@@ -166,7 +183,7 @@ public class HolyGrailAlgorithmHandler implements AlgorithmProtocolHandler {
                         int core = Integer.parseInt(messageParts[4]);
                         int mem = Integer.parseInt(messageParts[5]);
                         int disk = Integer.parseInt(messageParts[6]);
-                        avaliableServers.add(new avaliableServersStructure( new Server(serverType, serverID, serverState, curStartTime, core, mem, disk),1 ,1));
+                        avaliableServers.add(new avaliableServersStructure( new Server(serverType, serverID, serverState, curStartTime, core, mem, disk), 1, 1, true));
                         count++;
             
                         if (count >= nRecs) {
@@ -180,7 +197,11 @@ public class HolyGrailAlgorithmHandler implements AlgorithmProtocolHandler {
                     }
 
                     default -> {
-                        throw new UnrecognisedCommandException("Unrecognised command: " + message);
+                        if (message.contains("MIGR")) {
+                            return new Action(Action.ActionIntent.SEND_MESSAGE, "REDY");
+                        } else {
+                            throw new UnrecognisedCommandException("Unrecognised command: " + message);
+                        }
                     }
                 }
             }
@@ -260,17 +281,24 @@ public class HolyGrailAlgorithmHandler implements AlgorithmProtocolHandler {
         public List<Job> childList = new ArrayList<Job>();
         public String ServerType;
         public int ServerID;
+
+        public listedJobsStructure(String serverType, int serverID) {
+            ServerType = serverType;
+            ServerID = serverID;
+        }
     }
 
     public class avaliableServersStructure {
         public Server server;
         public int waitingJobs;
         public int runningJobs;
+        boolean active;
 
-        public avaliableServersStructure(Server Server, int WaitingJobs, int RunningJobs) {
+        public avaliableServersStructure(Server Server, int WaitingJobs, int RunningJobs, boolean Active) {
             server = Server;
             waitingJobs = WaitingJobs;
             runningJobs = RunningJobs;
+            active = Active;
         }
     }
 }
