@@ -153,7 +153,7 @@ public class HolyGrailAlgorithmHandler implements AlgorithmProtocolHandler {
                             return new Action(Action.ActionIntent.COMMAND_SCHD, job, chooseProritiseRunningServers(avaliableServers, job));
                             // return new Action(Action.ActionIntent.COMMAND_SCHD, job, avaliableServers.get(0).server);
                         } else {
-                            // return new Action(Action.ActionIntent.MULTIPART, "LSTJ", "LSTJ " + avaliableServers.get(serverloopCount++).serverType +  " " + avaliableServers.get(serverloopCount++).serverID);
+                            // return new Action(Action.ActionIntent.MULTIPART, "LSTJ", "LSTJ " + avaliableServers.get(serverloopCount++).server.serverType +  " " + avaliableServers.get(serverloopCount++).server.serverID);
                         }
                     }
 
@@ -197,13 +197,20 @@ public class HolyGrailAlgorithmHandler implements AlgorithmProtocolHandler {
     public Server chooseProritiseRunningServers (List<avaliableServersStructure> avaliableServers, Job job) {
         Server currentBestServer = avaliableServers.get(0).server;
         int diff = Integer.MAX_VALUE;
+        int bestServerSpread = Integer.MAX_VALUE;
         for (avaliableServersStructure avaliableServer : avaliableServers) {
             int abs = Math.abs(avaliableServer.server.core - job.cpu);
             if (abs < diff) {
-                // write some sort of max cap fitness check that caps at the second best server
-                if (diff < 1) {
-                    diff = abs;
+                // write some sort of max cap fitness check that caps at the second best server but also checks if server has waiting jobs
+                // priotitise servers with less waiting jobs
+                // if (diff > 1) {
+                diff = abs;
+                // currentBestServer = avaliableServer.server;
+                int serverSpread = avaliableServer.waitingJobs;
+                if (serverSpread < (bestServerSpread)) {
+                    bestServerSpread = serverSpread;
                     currentBestServer = avaliableServer.server;
+                // }
                 }
             }
         }
