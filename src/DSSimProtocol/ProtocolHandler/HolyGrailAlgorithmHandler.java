@@ -114,15 +114,15 @@ public class HolyGrailAlgorithmHandler implements AlgorithmProtocolHandler {
                 switch (messageParts[0]) {
 
                     case "OK", "JCPL" -> {
-                        if (justSchd) {
-                            justSchd = false;
-                            Action action = new Action(Action.ActionIntent.MULTIPART, "LSTJ", "LSTJ " + avaliableServers.get(serverloopCount).server.serverType +  " " + avaliableServers.get(serverloopCount).server.serverID);
-                            listedJobs.add(new listedJobsStructure(avaliableServers.get(serverloopCount).server.serverType, avaliableServers.get(serverloopCount).server.serverID));
-                            serverloopCount++;
-                            return action;
-                        } else {
+                        // if (justSchd) {
+                        //     justSchd = false;
+                        //     Action action = new Action(Action.ActionIntent.MULTIPART, "LSTJ", "LSTJ " + avaliableServers.get(serverloopCount).server.serverType +  " " + avaliableServers.get(serverloopCount).server.serverID);
+                        //     listedJobs.add(new listedJobsStructure(avaliableServers.get(serverloopCount).server.serverType, avaliableServers.get(serverloopCount).server.serverID));
+                        //     serverloopCount++;
+                        //     return action;
+                        // } else {
                             return new Action(Action.ActionIntent.SEND_MESSAGE, "REDY");
-                        }
+                        // }
                     }
 
                     case "JOBN" -> {
@@ -200,8 +200,11 @@ public class HolyGrailAlgorithmHandler implements AlgorithmProtocolHandler {
         for (avaliableServersStructure avaliableServer : avaliableServers) {
             int abs = Math.abs(avaliableServer.server.core - job.cpu);
             if (abs < diff) {
-                diff = abs;
-                currentBestServer = avaliableServer.server;
+                // write some sort of max cap fitness check that caps at the second best server
+                if (diff < 1) {
+                    diff = abs;
+                    currentBestServer = avaliableServer.server;
+                }
             }
         }
         return currentBestServer;
