@@ -114,6 +114,7 @@ public class HolyGrailAlgorithmHandler implements AlgorithmProtocolHandler {
                 switch (messageParts[0]) {
 
                     case "OK", "JCPL" -> {
+                        // commented out due to migration compoentnt not working as intended
                         // if (justSchd) {
                         //     justSchd = false;
                         //     Action action = new Action(Action.ActionIntent.MULTIPART, "LSTJ", "LSTJ " + avaliableServers.get(serverloopCount).server.serverType +  " " + avaliableServers.get(serverloopCount).server.serverID);
@@ -153,6 +154,7 @@ public class HolyGrailAlgorithmHandler implements AlgorithmProtocolHandler {
                             return new Action(Action.ActionIntent.COMMAND_SCHD, job, chooseProritiseRunningServers(avaliableServers, job));
                             // return new Action(Action.ActionIntent.COMMAND_SCHD, job, avaliableServers.get(0).server);
                         } else {
+                            // commented out due to migration compoentnt not working as intended
                             // return new Action(Action.ActionIntent.MULTIPART, "LSTJ", "LSTJ " + avaliableServers.get(serverloopCount++).server.serverType +  " " + avaliableServers.get(serverloopCount++).server.serverID);
                         }
                     }
@@ -210,7 +212,6 @@ public class HolyGrailAlgorithmHandler implements AlgorithmProtocolHandler {
                 if (serverSpread < (bestServerSpread)) {
                     bestServerSpread = serverSpread;
                     currentBestServer = avaliableServer.server;
-                // }
                 }
             }
         }

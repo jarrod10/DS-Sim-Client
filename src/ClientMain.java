@@ -132,92 +132,62 @@ class Client {
                     nextAction.jobState.getIndex());
                     case COMMAND_MIGR -> remoteConnection.writeString(nextAction.message);
                     case MULTIPART -> {
+                        // performs all multi part commands that are implemented here
+                        
                         // make some mini while loop to loop until multipart isn't needed anymore
                         // after while loop is completed make sure you do one more normal loop and then continue with normal code
                         // this is so it can return all the multipart loop stuff without having to change how the normal loop works for this special case.
                         
-                        // boolean loopFinished = false;
                         int loopCount = 0;
                         String FinalString = "";
-                        // while (!loopFinished) {
-                            
-                            
-                            remoteConnection.writeString(nextAction.message);
-                            switch (nextAction.source) {
-                                case "GETS" -> {
-                                    String[] messageParts = new String[3];
-                                    // if (remoteConnection.readReady()) {  // commented out this non blocking check because it was causing issues 
-                                        messageParts = remoteConnection.readString().split(" ");
-                                    // }
 
-                                    String message= "";
-                                    remoteConnection.writeString("OK");
-                                    while (loopCount < Integer.parseInt(messageParts[1])) {
-                                        if (remoteConnection.readReady()) {
-                                            message = remoteConnection.readString();
-                                        }
-                                        if (message.length() > 0) {
-                                            loopCount++;
-                                            FinalString += message + " ";
-                                        }
-                                    }
-                                }
-                                
-                                case "LSTJ" -> {
-                                    // String[] messageParts = new String[3];
-                                    // if (remoteConnection.readReady()) {
-                                    //     messageParts = remoteConnection.readString().split(" ");
-                                    // }
-                                    String message = "";
-
-                                    // if (remoteConnection.readReady()) {
-                                        // Thread.sleep(100);
-                                        // message = 
-                                        remoteConnection.readString();
-                                        // message = remoteConnection.readString();
-                                    // }
-                                    remoteConnection.writeString("OK");
-                                    
-                                    // some bug where message != "." when message = "." is returning true, expression is returing opposite
-                                    // System.out.println(message == ".");
-                                    while (!message.equals(".")) {
-                                        // if (remoteConnection.readReady()) {
-                                            // Thread.sleep(100);
-                                            message = remoteConnection.readString();
-                                        // }
-
-                                        if (!message.equals(".")) {
-                                            // if (message.length() > 0 && message == ".") {
-                                            // FinalString = "";
-                                            loopCount++;
-                                            // System.out.println(FinalString);
-                                            FinalString += message + " ";
-                                        // }
-                                            remoteConnection.writeString("OK");
-                                        }
-                                    }
-                                }
-
-                                // case "LSTJ2" -> {
-                                //     String message= "";
-                                //     if (remoteConnection.readReady()) {
-                                //         message = remoteConnection.readString();
-                                //     }
+                        remoteConnection.writeString(nextAction.message);
+                        switch (nextAction.source) {
+                            case "GETS" -> {
+                                String[] messageParts = new String[3];
+                                // if (remoteConnection.readReady()) {  // commented out this non blocking check because it was causing issues 
+                                    messageParts = remoteConnection.readString().split(" ");
                                 // }
-                                 
-                                default -> {break;}
-                            }
 
+                                String message= "";
+                                remoteConnection.writeString("OK");
+                                while (loopCount < Integer.parseInt(messageParts[1])) {
+                                    if (remoteConnection.readReady()) {
+                                        message = remoteConnection.readString();
+                                    }
+                                    if (message.length() > 0) {
+                                        loopCount++;
+                                        FinalString += message + " ";
+                                    }
+                                }
+                            }
                             
-                            // String receivedMessage = "";
-                            // if (remoteConnection.readReady()) {
-                            //     receivedMessage = remoteConnection.readString();
-                            // }
-                            
-                            // if (receivedMessage.length() > 0) {
-                            //     actionQueue.add(protocolHandler.onReceiveMessage(receivedMessage));
-                            // }
-                        // }
+                            case "LSTJ" -> {
+                                // String[] messageParts = new String[3];
+                                // if (remoteConnection.readReady()) {
+                                //     messageParts = remoteConnection.readString().split(" ");
+                                // }
+                                String message = "";
+
+                                // if (remoteConnection.readReady()) {
+                                    remoteConnection.readString();
+                                    // message = remoteConnection.readString();
+                                // }
+                                remoteConnection.writeString("OK");
+                                
+                                while (!message.equals(".")) {
+                                    message = remoteConnection.readString();
+                                    if (!message.equals(".")) {
+                                        loopCount++;
+                                        FinalString += message + " ";
+
+                                        remoteConnection.writeString("OK");
+                                    }
+                                }
+                            }
+                                
+                            default -> {break;}
+                        }
 
                         // perform final part of multipart
                         actionQueue.add(protocolHandler.onReceiveMessage(FinalString + nextAction.source));
